@@ -1,0 +1,5 @@
+timestamp,url,domain,status_code,error_type,message
+2026-09-18T11:18:11,https://ieeexplore.ieee.org/document/10816155,ieeexplore.ieee.org,202,202_RETRIES_EXHAUSTED,Received 202 after 3 attempts
+2026-09-18T11:43:29,https://pubmed.ncbi.nlm.nih.gov/39326451/,pubmed.ncbi.nlm.nih.gov,403,HTTP_ERROR,Forbidden
+2026-09-18T11:59:50,https://www.science.org/content/article/single-brain-implant-lets-paralyzed-people-both-talk-and-gesture-avatar?referrer=https%3A%2F%2Fwww.google.com%2F,www.science.org,403,HTTP_ERROR,Forbidden
+2026-09-18T12:00:42,https://medicalxpress.com/news/2024-02-companies-brain-implants-attention-swirling.html,medicalxpress.com,403,HTTP_ERROR,Forbidden
