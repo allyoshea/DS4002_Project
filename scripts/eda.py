@@ -2,16 +2,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-# -----------------------------
+
 # File locations
-# -----------------------------
 
 CSV_FILE = "articles.csv"
 ARTICLE_DIR = Path("articles")
 
-# -----------------------------
+
 # Load metadata
-# -----------------------------
+
 
 df = pd.read_csv(CSV_FILE)
 df["article_type"] = ["Scientific"] * 15 + ["News/Media"] * 15
@@ -30,9 +29,9 @@ print(df.isnull().sum())
 print("\nDuplicate URLs:")
 print(df["url"].duplicated().sum())
 
-# -----------------------------
+
 # Load article text
-# -----------------------------
+
 
 word_counts = []
 
@@ -52,25 +51,25 @@ for _, row in df.iterrows():
 
 df["word_count"] = word_counts
 
-# -----------------------------
+
 # Word count summary
-# -----------------------------
+
 
 print("\nWORD COUNT SUMMARY")
 print("------------------")
 print(df["word_count"].describe())
 
-# -----------------------------
+
 # Save updated EDA data
-# -----------------------------
+
 
 df.to_csv("eda_data.csv", index=False)
 
 print("\nSaved: eda_data.csv")
 
-# -----------------------------
+
 # Plot 1: Articles by source
-# -----------------------------
+
 
 # Plot 1: Number of articles by type
 type_counts = df["article_type"].value_counts()
