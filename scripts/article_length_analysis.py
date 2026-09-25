@@ -1,13 +1,16 @@
-
 import pandas as pd
-import matplotlib.pyplot as plt
+import re
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 # -----------------------------
 # File paths
 # -----------------------------
-ARTICLES_FILE = "articles.csv"
-SENTENCE_FILE = "sentence_sentiment_results.csv"
+ARTICLES_FILE = Path("data/articles.csv")
+ARTICLES_DIR = Path("data/articles")
+OUTPUT_DIR = Path("output")
+
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 # -----------------------------
 # Load article metadata
@@ -15,238 +18,171 @@ SENTENCE_FILE = "sentence_sentiment_results.csv"
 articles = pd.read_csv(ARTICLES_FILE)
 
 # -----------------------------
-# Assign article type
+# Classify article type
 # -----------------------------
-# Based on the order of articles in articles.csv:
-# First 15 = Scientific
-# Last 15 = News/Media
+scientific_sources = {
+    "www.nature.com",
+    "www.frontiersin.org",
+    "iopscience.iop.org"
+}
 
-articles["article_type"] = [
-    "Scientific" if i < 15 else "News/Media"
-    for i in range(len(articles))
-]
+articles["article_type"] = articles["source"].apply(
+    lambda source: (
+        "Scientific"
+        if source in scientific_sources
+        else "News/Media"
+    )
+)
 
 # -----------------------------
-# Calculate word count
+# Count words in article text
 # -----------------------------
-# text_file already contains paths like:
-# articles/002.txt
-# articles/003.txt
-# etc.
+def count_words(text):
+    """Count words in an article."""
+    if not isinstance(text, str):
+        return 0
+
+    words = re.findall(r"\b[\w'-]+\b", text)
+    return len(words)
+
 
 word_counts = []
 
 for _, row in articles.iterrows():
 
-    text_path = Path(row["text_file"])
+    # CSV paths look like:
+    # articles\006.txt
+    #
+    # Convert to:
+    # 006.txt
+    filename = Path(
+        str(row["text_file"]).replace("\\", "/")
+    ).name
+
+    text_path = ARTICLES_DIR / filename
+
+    if not text_path.exists():
+        print(f"WARNING: File not found: {text_path}")
+        word_counts.append(0)
+        continue
 
     try:
-        text = text_path.read_text(encoding="utf-8")
-        word_count = len(text.split())
-        word_counts.append(word_count)
+        with open(text_path, "r", encoding="utf-8") as file:
+            text = file.read()
 
-    except Exception as e:
-        print(f"Could not read {text_path}: {e}")
-        word_counts.append(None)
+        word_counts.append(count_words(text))
 
+    except Exception as error:
+        print(f"ERROR reading {text_path}: {error}")
+        word_counts.append(0)
+
+# Add word counts to dataframe
 articles["word_count"] = word_counts
 
 # -----------------------------
-# Check for missing word counts
+# Remove articles where text
+# could not be found
 # -----------------------------
-if articles["word_count"].isna().any():
-    print("\nWARNING: Some articles could not be read.")
-
-    print(
-        articles.loc[
-            articles["word_count"].isna(),
-            ["article_id", "text_file"]
-        ]
-    )
+valid_articles = articles[articles["word_count"] > 0].copy()
 
 # -----------------------------
-# Word count by article
+# Print article counts
 # -----------------------------
 print("\n==============================")
-print("WORD COUNT BY ARTICLE")
+print("ARTICLE COUNTS")
 print("==============================")
 
 print(
-    articles[
-        ["article_id", "article_type", "title", "word_count"]
-    ].to_string(index=False)
+    valid_articles["article_type"].value_counts()
 )
 
 # -----------------------------
 # Word count summary
 # -----------------------------
+summary = (
+    valid_articles
+    .groupby("article_type")["word_count"]
+    .agg([
+        "count",
+        "mean",
+        "std",
+        "median",
+        "min",
+        "max"
+    ])
+)
+
 print("\n==============================")
 print("WORD COUNT SUMMARY")
 print("==============================")
 
-word_summary = (
-    articles
-    .groupby("article_type")["word_count"]
-    .agg(
-        count="count",
-        mean="mean",
-        std="std",
-        median="median",
-        min="min",
-        max="max"
-    )
+print(summary.round(2))
+
+# -----------------------------
+# Save results
+# -----------------------------
+results_file = OUTPUT_DIR / "article_length_results.csv"
+
+valid_articles.to_csv(
+    results_file,
+    index=False
 )
 
-print(word_summary)
+print(f"\nResults saved to: {results_file}")
 
 # -----------------------------
-# Word count boxplot
+# Prepare data for plot
 # -----------------------------
-scientific_words = articles.loc[
-    articles["article_type"] == "Scientific",
+scientific = valid_articles.loc[
+    valid_articles["article_type"] == "Scientific",
     "word_count"
-].dropna()
+]
 
-news_words = articles.loc[
-    articles["article_type"] == "News/Media",
+news = valid_articles.loc[
+    valid_articles["article_type"] == "News/Media",
     "word_count"
-].dropna()
+]
 
-plt.figure(figsize=(7, 5))
+# -----------------------------
+# Create boxplot
+# -----------------------------
+plt.figure(figsize=(8, 6))
 
 plt.boxplot(
-    [scientific_words, news_words],
+    [scientific, news],
     tick_labels=["Scientific", "News/Media"]
 )
 
-# Individual article points
+# Add individual article points
 plt.scatter(
-    [1] * len(scientific_words),
-    scientific_words,
-    alpha=0.7
+    [1] * len(scientific),
+    scientific,
+    alpha=0.6
 )
 
 plt.scatter(
-    [2] * len(news_words),
-    news_words,
-    alpha=0.7
+    [2] * len(news),
+    news,
+    alpha=0.6
 )
 
+plt.xlabel("Article Type")
 plt.ylabel("Word Count")
-plt.title("Article Word Count by Article Type")
+plt.title("Article Length: Scientific vs. News/Media")
+
 plt.tight_layout()
 
-plt.savefig(
-    "article_word_count_boxplot.png",
-    dpi=300
-)
-
-plt.show()
-
 # -----------------------------
-# Load sentence-level results
+# Save figure
 # -----------------------------
-sentences = pd.read_csv(SENTENCE_FILE)
-
-# -----------------------------
-# Count sentences per article
-# -----------------------------
-sentence_counts = (
-    sentences
-    .groupby("article_id")
-    .size()
-    .reset_index(name="sentence_count")
-)
-
-# Add sentence counts to article dataframe
-articles = articles.merge(
-    sentence_counts,
-    on="article_id",
-    how="left"
-)
-
-# -----------------------------
-# Sentence count by article
-# -----------------------------
-print("\n==============================")
-print("SENTENCE COUNT BY ARTICLE")
-print("==============================")
-
-print(
-    articles[
-        ["article_id", "article_type", "sentence_count"]
-    ].to_string(index=False)
-)
-
-# -----------------------------
-# Sentence count summary
-# -----------------------------
-print("\n==============================")
-print("SENTENCE COUNT SUMMARY")
-print("==============================")
-
-sentence_summary = (
-    articles
-    .groupby("article_type")["sentence_count"]
-    .agg(
-        count="count",
-        mean="mean",
-        std="std",
-        median="median",
-        min="min",
-        max="max"
-    )
-)
-
-print(sentence_summary)
-
-# -----------------------------
-# Sentence count boxplot
-# -----------------------------
-scientific_sentences = articles.loc[
-    articles["article_type"] == "Scientific",
-    "sentence_count"
-].dropna()
-
-news_sentences = articles.loc[
-    articles["article_type"] == "News/Media",
-    "sentence_count"
-].dropna()
-
-plt.figure(figsize=(7, 5))
-
-plt.boxplot(
-    [scientific_sentences, news_sentences],
-    tick_labels=["Scientific", "News/Media"]
-)
-
-# Individual article points
-plt.scatter(
-    [1] * len(scientific_sentences),
-    scientific_sentences,
-    alpha=0.7
-)
-
-plt.scatter(
-    [2] * len(news_sentences),
-    news_sentences,
-    alpha=0.7
-)
-
-plt.ylabel("Sentence Count")
-plt.title("Sentence Count by Article Type")
-plt.tight_layout()
+figure_file = OUTPUT_DIR / "article_length_comparison.png"
 
 plt.savefig(
-    "article_sentence_count_boxplot.png",
-    dpi=300
+    figure_file,
+    dpi=300,
+    bbox_inches="tight"
 )
 
-plt.show()
+print(f"Figure saved to: {figure_file}")
 
-# -----------------------------
-# Finished
-# -----------------------------
-print("\nSaved:")
-print("  article_word_count_boxplot.png")
-print("  article_sentence_count_boxplot.png")
+plt.show()

@@ -1,0 +1,9 @@
+timestamp,url,domain,status_code,error_type,message
+2026-09-25T19:23:32,https://www.reuters.com/science/chinas-version-neuralink-unveiled-tech-forum-2024-04-25,www.reuters.com,401,HTTP_ERROR,HTTP Forbidden
+2026-09-25T19:23:42,https://www.reuters.com/business/healthcare-pharmaceuticals/musks-neuralink-registers-brain-implant-study-us-government-database-2024-05-28,www.reuters.com,401,HTTP_ERROR,HTTP Forbidden
+2026-09-25T19:23:52,https://apnews.com/article/e92ca9621c9331487c94e9b537c2d537,apnews.com,403,HTTP_ERROR,Forbidden
+2026-09-25T19:24:34,https://www.forbes.com/sites/naveenrao/2024/03/07/seeing-beyond-the-hype-of-that-one-neurotech-startup,www.forbes.com,403,HTTP_ERROR,Forbidden
+2026-09-25T19:24:44,https://www.axios.com/2025/02/25/fda-adaptive-brain-pacemaker-parkinsons-treatment,www.axios.com,403,HTTP_ERROR,Forbidden
+2026-09-25T19:25:16,https://apnews.com/article/9dbc92206389f27fd032825cf1597ee5,apnews.com,403,HTTP_ERROR,Forbidden
+2026-09-25T19:25:37,https://www.cbsnews.com/sacramento/news/uc-davis-als-patient-speak-using-thoughts,www.cbsnews.com,406,HTTP_ERROR,Not Acceptable
+2026-09-25T19:25:47,https://www.axios.com/pro/health-tech-deals/2024/12/17/precision-neuroscience-raises-102m-bci?,www.axios.com,403,HTTP_ERROR,Forbidden

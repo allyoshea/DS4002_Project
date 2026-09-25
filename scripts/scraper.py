@@ -13,7 +13,7 @@ import trafilatura
 # SETTINGS
 
 
-URL_FILE = "urls.txt"
+URL_FILE = "data/urls.txt"
 
 ARTICLE_DIR = "articles"
 OUTPUT_FILE = "articles.csv"
