@@ -45,6 +45,6 @@ original publishers.
 | `sentences` | Number of sentences analyzed in the article | Integer | N/A |
 ## Exploratory plots
 <img width="2370" height="1770" alt="image" src="https://github.com/user-attachments/assets/5af592e6-b081-466d-8954-4699982c9189" />
-**Figure 1.** Word count comparison between scientific versus news/media articles
+Figure 1. Word count comparison between scientific versus news/media articles
 <img width="1318" height="1020" alt="image" src="https://github.com/user-attachments/assets/53c6a193-7a4c-4f75-9f6d-16abf11dc254" />
-**Figure 2.** Exploratory plot from when there were 30 articles of spread of VADER sentiment score over year published.
+Figure 2. Exploratory plot from when there were 30 articles of spread of VADER sentiment score over year published.
