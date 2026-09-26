@@ -132,13 +132,11 @@ cd DS4002_Project
 ```bash
 cd ~/Desktop/DS4002_Project
 ```
-
 3. Create a Python virtual environment:
 
 ```bash
 python3 -m venv .venv
 ```
-
 4. Activate the virtual environment:
 
 ```bash
