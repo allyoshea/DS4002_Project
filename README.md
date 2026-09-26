@@ -6,9 +6,9 @@ This repository contains the process for developing and running a sentiment anal
 ## Contents of the Repository
 ### Software and Platform
 
--**IDE**: Visual Studio Code (VS Code)
--**Terminal**: Windows PowerShell
--**Programming Language**: Python
+- **IDE**: Visual Studio Code (VS Code)
+- **Terminal**: Windows PowerShell
+- **Programming Language**: Python
 
 ### Add-On Packages and Libraries
 
@@ -91,85 +91,220 @@ DS4002_Project/
 - `LICENSE` — Contains the project's license.
 
 ### Instructions for Reproducing the Results
-Step 1: Clone the Repository and Install Requirements
+### Section 3: Instructions for Reproducing the Results
 
-Clone the GitHub repository and navigate into the project folder:
+The following steps describe how to download the project, set up the Python environment, collect the article data, run the sentiment analyses, and generate the final figures.
 
+#### Step 1: Clone the Repository
+
+1. Open a terminal on your computer.
+2. Navigate to the location where you want to store the project. For example, to save the project on the Desktop:
+
+```bash
+cd ~/Desktop
+```
+
+3. Clone the GitHub repository:
+
+```bash
 git clone https://github.com/allyoshea/DS4002_Project.git
+```
+
+4. Navigate into the project folder:
+
+```bash
 cd DS4002_Project
+```
 
+5. Open the project in Visual Studio Code:
 
-Install the required Python packages:
+```bash
+code .
+```
 
+If the `code` command is not available, open Visual Studio Code manually and select **File → Open Folder**, then select the `DS4002_Project` folder.
+
+#### Step 2: Set Up the Python Environment
+
+### Section 3: Instructions for Reproducing the Results
+
+The following steps explain how to clone the repository, set up the Python environment, run the analysis scripts, and reproduce the results.
+
+#### Step 1: Clone the Repository
+
+1. Open **Visual Studio Code**.
+
+2. Select the **Source Control** icon from the left sidebar.
+
+3. Select **Clone Repository** and choose **Clone from GitHub**.
+
+4. Select the `allyoshea/DS4002_Project` repository. You can also clone the repository using the HTTPS URL:
+
+```text
+https://github.com/allyoshea/DS4002_Project.git
+```
+
+5. When prompted to select a location for the repository, choose the **Desktop** or another preferred location.
+
+6. Once the repository has finished cloning, select **Open** when prompted to open the repository in Visual Studio Code.
+
+7. Confirm that the `DS4002_Project` folder appears in the Explorer on the left side of Visual Studio Code.
+
+8. Open the integrated terminal by selecting **Terminal → New Terminal**. The terminal should automatically open in the `DS4002_Project` folder.
+
+The repository can also be cloned directly from a terminal using:
+
+```bash
+git clone https://github.com/allyoshea/DS4002_Project.git
+```
+
+#### Step 2: Set Up the Python Environment
+
+1. In the VS Code terminal, create a Python virtual environment:
+
+```bash
+python3 -m venv .venv
+```
+
+2. Activate the virtual environment:
+
+```bash
+source .venv/bin/activate
+```
+
+3. Install the required packages:
+
+```bash
 pip install -r requirements.txt
+```
 
-Step 2: Scrape the Articles
+#### Step 3: Collect the Article Data
 
-This step is optional if the pre-scraped articles are already included in the repository.
+The repository already contains the collected article data, so rerunning the scraper is optional when reproducing the existing results.
 
-The file data/urls.txt contains the URLs of all the scientific and news articles used in the project.
+The article URLs are stored in `data/urls.txt`.
 
-To run the web scraper, use:
+To collect the articles again, run:
 
-python scripts/scraper.py
+```bash
+python3 scripts/scraper.py
+```
 
+This script reads the URLs from `data/urls.txt` and saves the article metadata, article text files, and any scraping errors.
 
-Wait for the script to finish running. The scraper should produce:
+#### Step 4: Run SciBERT Sentiment Analysis
 
-articles.csv
+Run the SciBERT sentiment analysis script:
 
-An articles/ folder containing the scraped articles
+```bash
+python3 scripts/sentiment.py
+```
 
-These files are required for the sentiment analysis step.
+This produces:
 
-Step 3: Perform Sentiment Analysis
+- `data/sentiment_results.csv`
+- `data/sentence_sentiment_results.csv`
 
-The sentiment analysis uses a SciBERT model to analyze the scraped articles.
+#### Step 5: Run VADER Sentiment Analysis
 
-Run the sentiment analysis script from the main project directory:
+Run the VADER sentiment analysis script:
 
-python scripts/sentiment.py
+```bash
+python3 scripts/sentiment_vader.py
+```
 
+This produces:
 
-Wait for the script to finish running. The analysis should produce:
+- `data/vader_sentiment_data.csv`
 
-sentiment_results.csv — overall sentiment results
+#### Step 6: Analyze Article Length
 
-sentence_sentiment_results.csv — sentiment results for individual sentences
+Run the article length analysis:
 
-Step 4: Create EDA Plots and Analyze the Results
+```bash
+python3 scripts/article_length_analysis.py
+```
 
-[Add instructions for running the EDA scripts and/or creating the plots here.]
+This produces:
 
-For example:
+- `data/article_length_results.csv`
+- `output/article_length_comparison.png`
 
-python scripts/[EDA_SCRIPT_NAME].py
+#### Step 7: Generate SciBERT Figures
 
+Run the SciBERT exploratory data analysis script:
 
-The resulting plots and analysis should be saved in:
+```bash
+python3 scripts/eda_sciBert.py
+```
 
-[LOCATION OF RESULTS]
+This generates the following figures in the `output/` folder:
 
+- `sentiment_composition_stacked.png`
+- `positive_pct_by_type.png`
+- `negative_pct_by_type.png`
+- `neutral_pct_by_type.png`
 
-Review the resulting figures and datasets to analyze the sentiment trends found in the BCI-related articles.
+#### Step 8: Generate VADER Figures
 
-Project Workflow
+Run the VADER exploratory data analysis script:
 
-The overall workflow for reproducing the project results is:
+```bash
+python3 scripts/eda_vader.py
+```
 
-Clone Repository
-       ↓
-Install Requirements
-       ↓
+This generates the following figures in the `output/` folder:
+
+- `vader_sentiment_composition_stacked.png`
+- `vader_compound_by_article.png`
+- `vader_mean_compound_by_type.png`
+
+#### Step 9: Review the Results
+
+After running the scripts, the processed datasets will be located in the `data/` folder and the generated figures will be located in the `output/` folder.
+
+The project contains 60 BCI-related articles:
+
+- 30 scientific articles
+- 30 news/media articles
+
+The resulting datasets and figures can be used to compare sentiment patterns and article length between the two article types.
+
+The project contains 60 BCI-related articles:
+
+- 30 scientific articles
+- 30 news/media articles
+
+The resulting datasets and figures can be used to compare sentiment patterns and article length between the two article types.
+
+### Project Workflow
+
+```text
+Clone GitHub Repository
+        ↓
+Open Project in VS Code
+        ↓
+Create and Activate Virtual Environment
+        ↓
+Install Required Packages
+        ↓
 Scrape Articles
-       ↓
-articles.csv + articles/
-       ↓
+        ↓
+articles.csv + article text files
+        ↓
 Run SciBERT Sentiment Analysis
-       ↓
-sentiment_results.csv
-sentence_sentiment_results.csv
-       ↓
-Create EDA Plots
-       ↓
-Analyze Results
+        ↓
+SciBERT Results
+        ↓
+Run VADER Sentiment Analysis
+        ↓
+VADER Results
+        ↓
+Analyze Article Length
+        ↓
+Run EDA Scripts
+        ↓
+Figures saved in output/
+        ↓
+Review and Compare Results
+```
