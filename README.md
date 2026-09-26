@@ -1,80 +1,96 @@
-#DS 4002 Project 1
+# DS 4002 Project 1
 The Synapses
 
 This repository contains the process for developing and running a sentiment analysis model trained on scientific and news articles regarding brain-computer interfaces (BCIs).
 
-##Software and Platform
-###Software
+## Contents of the Repository
+### Software and Platform
 
 -**IDE**: Visual Studio Code (VS Code)
 -**Terminal**: Windows PowerShell
 -**Programming Language**: Python
 
-###Add-On Packages and Libraries
+### Add-On Packages and Libraries
 
 The project uses the following Python packages:
 
--pandas
--requests
--trafilatura
--torch
--transformers
--nltk
--vaderSentiment
--scikit-learn
--matplotlib
+- pandas
+- requests
+- trafilatura
+- torch
+- transformers
+- nltk
+- vaderSentiment
+- scikit-learn
+- matplotlib
 
 See `requirements.txt` for the complete list of required packages.
 
-Map of the Documentation
+### Map of the Documentation
 
 The repository is organized as follows:
 ```text
 DS4002_Project/
 │
-├── data/
-│   ├── articles/
-│   │   └── [scraped article files]
-│   ├── articles.csv
-│   ├── sentiment_results.csv
-│   ├── sentence_sentiment_results.csv
-│   └── urls.txt
-│
-├── scripts/
-│   ├── scraper.py
-│   └── sentiment.py
-│
-├── requirements.txt
+├── LICENSE
 ├── README.md
-└── LICENSE.md
+├── data
+│   ├── urls.txt
+│   ├── articles
+│   │   ├── 001.txt
+│   │   ├── 002.txt
+│   │   ├── 003.txt
+│   │   ├── . . .
+│   │   └── 060.txt
+│   ├── articles.csv
+│   ├── article_length_results.csv
+│   ├── sentence_sentiment_results.csv
+│   ├── sentiment_results.csv
+│   └── vader_sentiment_data.csv
+├── output
+│   ├── article_length_comparison.png
+│   ├── negative_pct_by_type.png
+│   ├── neutral_pct_by_type.png
+│   ├── positive_pct_by_type.png
+│   ├── sentiment_composition_stacked.png
+│   ├── vader_compound_by_article.png
+│   ├── vader_mean_compound_by_type.png
+│   └── vader_sentiment_composition_stacked.png
+├── requirements.txt
+├── scrape_errors.csv
+└── scripts
+    ├── README.md
+    ├── article_length_analysis.py
+    ├── eda_sciBert.py
+    ├── eda_vader.py
+    ├── scraper.py
+    ├── sentiment.py
+    └── sentiment_vader.py
 ```
-Folder and File Descriptions
+**Folder and File Descriptions**
 
-data/ — Contains the datasets and files used throughout the project.
+- `data/` — Contains the article data, sentiment results, and other processed datasets.
+- `data/articles/` — Contains the 60 individual article text files collected by the web scraper.
+- `data/articles.csv` — Contains metadata for the articles, including source, date, title, author, URL, and text file.
+- `data/urls.txt` — Contains the URLs used to collect the articles.
+- `data/article_length_results.csv` — Contains the results of the article length analysis.
+- `data/sentence_sentiment_results.csv` — Contains sentence-level sentiment results from SciBERT.
+- `data/sentiment_results.csv` — Contains article-level sentiment results from SciBERT.
+- `data/vader_sentiment_data.csv` — Contains article-level sentiment results from VADER.
+- `output/` — Contains the figures generated during exploratory data analysis.
+- `scripts/` — Contains the Python scripts used to collect, analyze, and visualize the data.
+- `scripts/scraper.py` — Scrapes article text and metadata from the URLs in `urls.txt`.
+- `scripts/sentiment.py` — Performs SciBERT sentiment analysis.
+- `scripts/sentiment_vader.py` — Performs VADER sentiment analysis.
+- `scripts/article_length_analysis.py` — Analyzes article length.
+- `scripts/eda_sciBert.py` — Generates EDA figures for the SciBERT results.
+- `scripts/eda_vader.py` — Generates EDA figures for the VADER results.
+- `requirements.txt` — Lists the Python packages required to reproduce the analysis.
+- `scrape_errors.csv` — Records articles that could not be successfully scraped.
+- `README.md` — Provides an overview of the project and instructions for reproducing the results.
+- `LICENSE` — Contains the project's license.
 
-data/articles/ — Contains the individual articles collected by the web scraper.
-
-data/articles.csv — Contains the scraped article data in CSV format.
-
-data/urls.txt — Contains the URLs of the scientific and news articles used in the project.
-
-data/sentiment_results.csv — Contains the overall sentiment results produced by the sentiment analysis model.
-
-data/sentence_sentiment_results.csv — Contains sentiment results for individual sentences.
-
-scripts/ — Contains the Python scripts used to scrape articles and perform sentiment analysis.
-
-scripts/scraper.py — Scrapes the articles listed in urls.txt.
-
-scripts/sentiment.py — Uses the SciBERT model to perform sentiment analysis.
-
-requirements.txt — Lists the Python packages required to run the project.
-
-README.md — Provides an overview of the project and instructions for reproducing the results.
-
-LICENSE.md — Contains the project's MIT License.
-
-Instructions for Reproducing the Results
+### Instructions for Reproducing the Results
 Step 1: Clone the Repository and Install Requirements
 
 Clone the GitHub repository and navigate into the project folder:
