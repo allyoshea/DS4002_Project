@@ -136,12 +136,12 @@ cd ~/Desktop/DS4002_Project
 3. Create a Python virtual environment:
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 ```
 4. Activate the virtual environment:
 
 ```bash
-source .venv/bin/activate
+source .venv/bin/Activate
 ```
 
 5. Install the required packages:
@@ -159,7 +159,7 @@ The article URLs are stored in `data/urls.txt`.
 To collect the articles again, run the following command in the **coding platform's integrated terminal**:
 
 ```bash
-python3 scripts/01_scraper.py
+python scripts/01_scraper.py
 ```
 
 This script reads the URLs from `data/urls.txt` and saves the article metadata, article text files, and any scraping errors. This will take awhile and to avoid any issues with potential firewalls reference the data/articles folder with the already scraped .txt files. 
@@ -169,7 +169,7 @@ This script reads the URLs from `data/urls.txt` and saves the article metadata, 
 In the **coding platform's integrated terminal**, run:
 
 ```bash
-python3 scripts/02_sentiment.py
+python scripts/02_sentiment.py
 ```
 
 This produces:
@@ -181,7 +181,7 @@ This produces:
 Run:
 
 ```bash
-python3 scripts/03_eda_sciBert.py
+python scripts/03_eda_sciBert.py
 ```
 
 This generates the following figures in the `output/` folder:
@@ -196,7 +196,7 @@ This generates the following figures in the `output/` folder:
 Run:
 
 ```bash
-python3 scripts/04_sentiment_vader.py
+python scripts/04_sentiment_vader.py
 ```
 
 This produces:
@@ -210,7 +210,7 @@ This produces:
 Run:
 
 ```bash
-python3 scripts/05_eda_vader.py
+python scripts/05_eda_vader.py
 ```
 
 This generates the following figures in the `output/` folder:
@@ -224,7 +224,7 @@ This generates the following figures in the `output/` folder:
 Run:
 
 ```bash
-python3 scripts/06_article_length_analysis.py
+python scripts/06_article_length_analysis.py
 ```
 
 This produces:
