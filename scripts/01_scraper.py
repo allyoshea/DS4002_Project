@@ -3,7 +3,7 @@ Script: scraper.py
 
 Purpose:
     Collect article text and metadata from the URLs listed in
-    data/urls.txt for the BCI sentiment analysis project.
+    data/urls.txt for the BCI sentiment analysis Project 1. 
 
 Input:
     data/urls.txt
