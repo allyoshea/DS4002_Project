@@ -95,84 +95,57 @@ DS4002_Project/
 
 The following steps describe how to download the project, set up the Python environment, collect the article data, run the sentiment analyses, and generate the final figures.
 
-#### Step 1: Clone the Repository
-
-1. Open a terminal on your computer.
-2. Navigate to the location where you want to store the project. For example, to save the project on the Desktop:
-
-```bash
-cd ~/Desktop
-```
-
-3. Clone the GitHub repository:
-
-```bash
-git clone https://github.com/allyoshea/DS4002_Project.git
-```
-
-4. Navigate into the project folder:
-
-```bash
-cd DS4002_Project
-```
-
-5. Open the project in Visual Studio Code:
-
-```bash
-code .
-```
-
-If the `code` command is not available, open Visual Studio Code manually and select **File → Open Folder**, then select the `DS4002_Project` folder.
-
-#### Step 2: Set Up the Python Environment
-
-### Section 3: Instructions for Reproducing the Results
-
-The following steps explain how to clone the repository, set up the Python environment, run the analysis scripts, and reproduce the results.
-
-#### Step 1: Clone the Repository
-
-1. Open **Visual Studio Code**.
-
-2. Select the **Source Control** icon from the left sidebar.
-
-3. Select **Clone Repository** and choose **Clone from GitHub**.
-
-4. Select the `allyoshea/DS4002_Project` repository. You can also clone the repository using the HTTPS URL:
+1. Go to the GitHub repository and copy the HTTPS URL by clicking the <Code> button:
 
 ```text
 https://github.com/allyoshea/DS4002_Project.git
 ```
 
-5. When prompted to select a location for the repository, choose the **Desktop** or another preferred location.
+2. Open the **Terminal application on your laptop**. This is the regular computer terminal, not the terminal inside your coding platform.
 
-6. Once the repository has finished cloning, select **Open** when prompted to open the repository in Visual Studio Code.
+3. Navigate to the location where you want to save the project, such as your Desktop:
 
-7. Confirm that the `DS4002_Project` folder appears in the Explorer on the left side of Visual Studio Code.
+```bash
+cd ~/Desktop
+```
 
-8. Open the integrated terminal by selecting **Terminal → New Terminal**. The terminal should automatically open in the `DS4002_Project` folder.
-
-The repository can also be cloned directly from a terminal using:
+4. Clone the repository:
 
 ```bash
 git clone https://github.com/allyoshea/DS4002_Project.git
 ```
 
+5. Navigate into the project folder:
+
+```bash
+cd DS4002_Project
+```
+
+6. Open the `DS4002_Project` folder in your preferred coding platform, such as Visual Studio Code.
+
 #### Step 2: Set Up the Python Environment
 
-1. In the VS Code terminal, create a Python virtual environment:
+1. Once the project is open in your coding platform, open the **integrated terminal inside the coding platform**. In Visual Studio Code, select **Terminal → New Terminal on top bar of computer normally**.
+
+2. Confirm that the terminal is located in the `DS4002_Project` folder. If needed, navigate to the folder:
+
+```bash
+cd ~/Desktop/DS4002_Project
+```
+
+3. Create a Python virtual environment:
 
 ```bash
 python3 -m venv .venv
 ```
 
-2. Activate the virtual environment:
+4. Activate the virtual environment:
 
 ```bash
 source .venv/bin/activate
 ```
 
-3. Install the required packages:
+5. Install the required packages:
 
 ```bash
 pip install -r requirements.txt
@@ -184,17 +157,17 @@ The repository already contains the collected article data, so rerunning the scr
 
 The article URLs are stored in `data/urls.txt`.
 
-To collect the articles again, run:
+To collect the articles again, run the following command in the **coding platform's integrated terminal**:
 
 ```bash
 python3 scripts/scraper.py
 ```
 
-This script reads the URLs from `data/urls.txt` and saves the article metadata, article text files, and any scraping errors.
+This script reads the URLs from `data/urls.txt` and saves the article metadata, article text files, and any scraping errors. This will take awhile and to avoid any issues with potential firewalls reference the data/articles folder with the already scraped .txt files. 
 
 #### Step 4: Run SciBERT Sentiment Analysis
 
-Run the SciBERT sentiment analysis script:
+In the **coding platform's integrated terminal**, run:
 
 ```bash
 python3 scripts/sentiment.py
@@ -207,7 +180,7 @@ This produces:
 
 #### Step 5: Run VADER Sentiment Analysis
 
-Run the VADER sentiment analysis script:
+Run:
 
 ```bash
 python3 scripts/sentiment_vader.py
@@ -219,7 +192,7 @@ This produces:
 
 #### Step 6: Analyze Article Length
 
-Run the article length analysis:
+Run:
 
 ```bash
 python3 scripts/article_length_analysis.py
@@ -232,7 +205,7 @@ This produces:
 
 #### Step 7: Generate SciBERT Figures
 
-Run the SciBERT exploratory data analysis script:
+Run:
 
 ```bash
 python3 scripts/eda_sciBert.py
@@ -247,7 +220,7 @@ This generates the following figures in the `output/` folder:
 
 #### Step 8: Generate VADER Figures
 
-Run the VADER exploratory data analysis script:
+Run:
 
 ```bash
 python3 scripts/eda_vader.py
@@ -262,13 +235,6 @@ This generates the following figures in the `output/` folder:
 #### Step 9: Review the Results
 
 After running the scripts, the processed datasets will be located in the `data/` folder and the generated figures will be located in the `output/` folder.
-
-The project contains 60 BCI-related articles:
-
-- 30 scientific articles
-- 30 news/media articles
-
-The resulting datasets and figures can be used to compare sentiment patterns and article length between the two article types.
 
 The project contains 60 BCI-related articles:
 
