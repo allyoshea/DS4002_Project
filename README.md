@@ -275,3 +275,8 @@ Figures saved in output/
         ↓
 Review and Compare Results
 ```
+## References 
+[1] What Are Word Embeddings? | IBM.” Accessed: Sep. 10, 2026. [Online]. Available:
+https://www.ibm.com/think/topics/word-embeddings
+[2] “Welcome to VaderSentiment’s documentation! — VaderSentiment 3.3.1 documentation.”
+Accessed: Sep. 16, 2026. [Online]. Available: https://vadersentiment.readthedocs.io/en/latest/
