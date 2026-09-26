@@ -42,7 +42,7 @@ original publishers.
 | `negative_pct` | Proportion of sentences classified as negative by SciBERT | Numeric | SciBERT classifications may not perfectly capture sentiment in scientific/technical language |
 | `neutral_pct` | Proportion of sentences classified as neutral by SciBERT | Numeric | SciBERT classifications may not perfectly capture sentiment in scientific/technical language |
 | `overall_sentiment` | Sentiment category with the largest proportion of sentences classified by SciBERT | Categorical | Depends on the model's sentence-level classifications |
-| `sentences` | Number of sentences analyzed in the article | Integer | Depends on the sentence-splitting method and exclusion of very short sentences |
+| `sentences` | Number of sentences analyzed in the article | Integer | N/A |
 ## Exploratory plots
 <img width="2370" height="1770" alt="image" src="https://github.com/user-attachments/assets/5af592e6-b081-466d-8954-4699982c9189" />
 **Figure 1.** Word count comparison between scientific versus news/media articles
