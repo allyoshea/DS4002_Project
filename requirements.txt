@@ -3,3 +3,6 @@ torch
 requests
 transformers
 trafilatura
+vaderSentiment
+nltk
+matplotlib
