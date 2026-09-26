@@ -1,5 +1,5 @@
 """
-Script: scraper.py
+Script: 01_scraper.py
 
 Purpose:
     Collect article text and metadata from the URLs listed in
