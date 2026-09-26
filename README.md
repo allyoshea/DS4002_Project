@@ -1,37 +1,35 @@
-DS 4002 Project 1
+#DS 4002 Project 1
 The Synapses
 
 This repository contains the process for developing and running a sentiment analysis model trained on scientific and news articles regarding brain-computer interfaces (BCIs).
 
-Software and Platform
-Software
+##Software and Platform
+###Software
 
-IDE: Visual Studio Code (VS Code)
+-**IDE**: Visual Studio Code (VS Code)
+-**Terminal**: Windows PowerShell
+-**Programming Language**: Python
 
-Terminal: Windows PowerShell
-
-Programming Language: Python
-
-Add-On Packages and Libraries
+###Add-On Packages and Libraries
 
 The project uses the following Python packages:
 
-pandas
+-pandas
+-requests
+-trafilatura
+-torch
+-transformers
+-nltk
+-vaderSentiment
+-scikit-learn
+-matplotlib
 
-requests
-
-trafilatura
-
-torch
-
-transformers
-
-See requirements.txt for the complete list of required packages.
+See `requirements.txt` for the complete list of required packages.
 
 Map of the Documentation
 
 The repository is organized as follows:
-
+```text
 DS4002_Project/
 │
 ├── data/
@@ -49,7 +47,7 @@ DS4002_Project/
 ├── requirements.txt
 ├── README.md
 └── LICENSE.md
-
+```
 Folder and File Descriptions
 
 data/ — Contains the datasets and files used throughout the project.
