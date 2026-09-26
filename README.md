@@ -7,10 +7,11 @@ This repository contains the process for developing and running a sentiment anal
 ### Software and Platform
 
 - **IDE**: Visual Studio Code (VS Code)
-- **Terminal**: Windows PowerShell
+- **Terminal**: VS Code Integrated Terminal or Windows PowerShell
 - **Programming Language**: Python
-
-### Add-On Packages and Libraries
+- **Version Control / Repository**: GitHub
+  
+#### Add-On Packages and Libraries
 
 The project uses the following Python packages:
 
@@ -35,6 +36,7 @@ DS4002_Project/
 ├── LICENSE
 ├── README.md
 ├── data
+│   ├── README.md
 │   ├── urls.txt
 │   ├── articles
 │   │   ├── 001.txt
@@ -59,7 +61,6 @@ DS4002_Project/
 ├── requirements.txt
 ├── scrape_errors.csv
 └── scripts
-    ├── README.md
     ├── 06_article_length_analysis.py
     ├── 03_eda_sciBert.py
     ├── 05_eda_vader.py
@@ -87,11 +88,11 @@ DS4002_Project/
 - `scripts/05_eda_vader.py` — Generates EDA figures for the VADER results.
 - `requirements.txt` — Lists the Python packages required to reproduce the analysis.
 - `scrape_errors.csv` — Records articles that could not be successfully scraped.
-- `README.md` — Provides an overview of the project and instructions for reproducing the results.
+- `README.md` — Provides an overview of the project and instructions for reproducing  the results.
+- `data/README.md` - Provides metadata information such as data summary, provenance, ethical statement, data dictionary
 - `LICENSE` — Contains the project's license.
 
 ### Instructions for Reproducing the Results
-### Section 3: Instructions for Reproducing the Results
 
 The following steps describe how to download the project, set up the Python environment, collect the article data, run the sentiment analyses, and generate the final figures.
 
