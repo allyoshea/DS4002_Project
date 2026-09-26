@@ -1,30 +1,67 @@
+"""
+Script: 03_eda_sciBert.py
+
+Purpose:
+    Perform exploratory data analysis on the SciBERT sentiment results
+    and generate figures comparing scientific and news/media articles.
+
+Inputs:
+    data/articles.csv
+    data/sentiment_results.csv
+
+Outputs:
+    output/articles_by_type.png
+    output/positive_pct_by_type.png
+    output/negative_pct_by_type.png
+    output/neutral_pct_by_type.png
+    output/sentence_count_by_type.png
+    output/sentiment_composition_stacked.png
+    output/sentiment_eda_data.csv
+
+Process:
+    1. Load the article metadata and SciBERT sentiment results.
+    2. Combine the two datasets using article_id.
+    3. Classify articles as Scientific or News/Media based on article_id.
+    4. Summarize the dataset by article type.
+    5. Compare sentiment percentages between article types.
+    6. Compare the number of sentences per article.
+    7. Save the processed data and generated figures.
+
+Notes:
+    Articles 001-030 are classified as Scientific and articles 031-060
+    are classified as News/Media.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
 
-# File paths
+
 ARTICLES_FILE = Path("data/articles.csv")
-SENTIMENT_FILE = Path("output/sentiment_results.csv")
+SENTIMENT_FILE = Path("data/sentiment_results.csv")
 OUTPUT_DIR = Path("output")
 
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-# Load data
+
+# Load the article metadata and SciBERT sentiment results.
 articles = pd.read_csv(ARTICLES_FILE)
 sentiment = pd.read_csv(SENTIMENT_FILE)
 
-# Combine article metadata and sentiment results
+# Combine the metadata and sentiment results using the article ID.
 df = articles.merge(
     sentiment,
     on="article_id",
     how="inner"
 )
 
-# Classify articles
+# The article IDs were assigned by dataset group:
+# 001-030 are Scientific and 031-060 are News/Media.
 df["article_type"] = df["article_id"].apply(
     lambda x: "Scientific" if x <= 30 else "News/Media"
 )
+
 
 print("\nDATASET OVERVIEW")
 print("----------------")
@@ -33,23 +70,37 @@ print(f"Number of articles: {len(df)}")
 print("\nArticles by type:")
 print(df["article_type"].value_counts())
 
-# Plot 1: Number of articles by type
+
+# Compare the number of articles in each group.
 type_counts = df["article_type"].value_counts()
-type_counts = type_counts.reindex(["Scientific", "News/Media"])
+type_counts = type_counts.reindex(
+    ["Scientific", "News/Media"]
+)
 
 plt.figure(figsize=(7, 5))
-plt.bar(type_counts.index, type_counts.values)
+
+plt.bar(
+    type_counts.index,
+    type_counts.values
+)
+
 plt.xlabel("Article Type")
 plt.ylabel("Number of Articles")
 plt.title("Number of Articles by Type")
+
 plt.tight_layout()
+
 plt.savefig(
     OUTPUT_DIR / "articles_by_type.png",
     dpi=300,
     bbox_inches="tight"
 )
+
 plt.close()
-# Plot sentiment separately with error bars
+
+
+# Calculate the mean and standard deviation of each sentiment category
+# within the two article types.
 sentiment_columns = {
     "positive_pct": "Positive",
     "negative_pct": "Negative",
@@ -87,12 +138,15 @@ for column, label in sentiment_columns.items():
         }
     )
 
-    plt.xticks(x, article_order)
+    plt.xticks(
+        x,
+        article_order
+    )
+
     plt.xlabel("Article Type")
     plt.ylabel("Average Percentage of Sentences (%)")
     plt.title(f"{label} Sentiment by Article Type")
 
-    # Keep percentage values above zero
     plt.ylim(bottom=0)
 
     plt.tight_layout()
@@ -104,34 +158,45 @@ for column, label in sentiment_columns.items():
     )
 
     plt.close()
-# Plot 3: Number of sentences per article
+
+
+# Compare the number of sentences contained in each article.
 sentence_counts = [
     df[df["article_type"] == "Scientific"]["sentences"],
     df[df["article_type"] == "News/Media"]["sentences"]
 ]
 
 plt.figure(figsize=(7, 5))
+
 plt.boxplot(
     sentence_counts,
     tick_labels=["Scientific", "News/Media"]
 )
+
 plt.xlabel("Article Type")
 plt.ylabel("Number of Sentences")
 plt.title("Number of Sentences per Article")
+
 plt.tight_layout()
+
 plt.savefig(
     OUTPUT_DIR / "sentence_count_by_type.png",
     dpi=300,
     bbox_inches="tight"
 )
+
 plt.close()
 
-# Save combined data
+
+# Save the combined metadata and sentiment data for reference.
 df.to_csv(
     OUTPUT_DIR / "sentiment_eda_data.csv",
     index=False
 )
-# Plot sentiment composition as 100% stacked bars
+
+
+# Calculate the average percentage of positive, negative, and neutral
+# sentences for each article type.
 sentiment_summary = (
     df.groupby("article_type")[
         ["positive_pct", "negative_pct", "neutral_pct"]
@@ -141,12 +206,18 @@ sentiment_summary = (
 )
 
 article_order = ["Scientific", "News/Media"]
-sentiment_summary = sentiment_summary.reindex(article_order)
+
+sentiment_summary = sentiment_summary.reindex(
+    article_order
+)
 
 positive = sentiment_summary["positive_pct"]
 negative = sentiment_summary["negative_pct"]
 neutral = sentiment_summary["neutral_pct"]
 
+
+# Create a 100% stacked bar chart showing the average sentiment
+# composition of each article type.
 plt.figure(figsize=(6, 4.2))
 
 bar_width = 0.42
@@ -183,13 +254,28 @@ plt.bar(
     linewidth=0.8
 )
 
-plt.xlabel("Article Type", fontsize=11)
-plt.ylabel("Percentage of Sentences (%)", fontsize=11)
-plt.title("Sentiment Composition by Article Type", fontsize=12, pad=10)
+plt.xlabel(
+    "Article Type",
+    fontsize=11
+)
+
+plt.ylabel(
+    "Percentage of Sentences (%)",
+    fontsize=11
+)
+
+plt.title(
+    "Sentiment Composition by Article Type",
+    fontsize=12,
+    pad=10
+)
 
 plt.ylim(0, 100)
 
-plt.tick_params(axis="both", labelsize=10)
+plt.tick_params(
+    axis="both",
+    labelsize=10
+)
 
 plt.legend(
     frameon=False,
@@ -199,7 +285,13 @@ plt.legend(
     ncol=3
 )
 
-plt.grid(axis="y", linestyle="--", linewidth=0.5, alpha=0.3)
+plt.grid(
+    axis="y",
+    linestyle="--",
+    linewidth=0.5,
+    alpha=0.3
+)
+
 plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
 
@@ -212,8 +304,13 @@ plt.savefig(
 )
 
 plt.close()
+
+
 print("\nSaved plots:")
 print("articles_by_type.png")
-print("sentiment_composition_by_type.png")
+print("positive_pct_by_type.png")
+print("negative_pct_by_type.png")
+print("neutral_pct_by_type.png")
 print("sentence_count_by_type.png")
+print("sentiment_composition_stacked.png")
 print("\nAll files saved to the output/ folder.")
