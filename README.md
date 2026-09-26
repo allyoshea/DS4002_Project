@@ -60,12 +60,12 @@ DS4002_Project/
 ├── scrape_errors.csv
 └── scripts
     ├── README.md
-    ├── article_length_analysis.py
-    ├── eda_sciBert.py
-    ├── eda_vader.py
-    ├── scraper.py
-    ├── sentiment.py
-    └── sentiment_vader.py
+    ├── 06_article_length_analysis.py
+    ├── 03_eda_sciBert.py
+    ├── 05_eda_vader.py
+    ├── 01_scraper.py
+    ├── 02_sentiment.py
+    └── 04_sentiment_vader.py
 ```
 **Folder and File Descriptions**
 
@@ -79,12 +79,12 @@ DS4002_Project/
 - `data/vader_sentiment_data.csv` — Contains article-level sentiment results from VADER.
 - `output/` — Contains the figures generated during exploratory data analysis.
 - `scripts/` — Contains the Python scripts used to collect, analyze, and visualize the data.
-- `scripts/scraper.py` — Scrapes article text and metadata from the URLs in `urls.txt`.
-- `scripts/sentiment.py` — Performs SciBERT sentiment analysis.
-- `scripts/sentiment_vader.py` — Performs VADER sentiment analysis.
-- `scripts/article_length_analysis.py` — Analyzes article length.
-- `scripts/eda_sciBert.py` — Generates EDA figures for the SciBERT results.
-- `scripts/eda_vader.py` — Generates EDA figures for the VADER results.
+- `scripts/01_scraper.py` — Scrapes article text and metadata from the URLs in `urls.txt`.
+- `scripts/02_sentiment.py` — Performs SciBERT sentiment analysis.
+- `scripts/04_sentiment_vader.py` — Performs VADER sentiment analysis.
+- `scripts/06_article_length_analysis.py` — Analyzes article length.
+- `scripts/03_eda_sciBert.py` — Generates EDA figures for the SciBERT results.
+- `scripts/05_eda_vader.py` — Generates EDA figures for the VADER results.
 - `requirements.txt` — Lists the Python packages required to reproduce the analysis.
 - `scrape_errors.csv` — Records articles that could not be successfully scraped.
 - `README.md` — Provides an overview of the project and instructions for reproducing the results.
@@ -158,7 +158,7 @@ The article URLs are stored in `data/urls.txt`.
 To collect the articles again, run the following command in the **coding platform's integrated terminal**:
 
 ```bash
-python3 scripts/scraper.py
+python3 scripts/01_scraper.py
 ```
 
 This script reads the URLs from `data/urls.txt` and saves the article metadata, article text files, and any scraping errors. This will take awhile and to avoid any issues with potential firewalls reference the data/articles folder with the already scraped .txt files. 
@@ -168,45 +168,19 @@ This script reads the URLs from `data/urls.txt` and saves the article metadata, 
 In the **coding platform's integrated terminal**, run:
 
 ```bash
-python3 scripts/sentiment.py
+python3 scripts/02_sentiment.py
 ```
 
 This produces:
 
 - `data/sentiment_results.csv`
 - `data/sentence_sentiment_results.csv`
-
-#### Step 5: Run VADER Sentiment Analysis
-
-Run:
-
-```bash
-python3 scripts/sentiment_vader.py
-```
-
-This produces:
-
-- `data/vader_sentiment_data.csv`
-
-#### Step 6: Analyze Article Length
+#### Step 5: Generate SciBERT Figures
 
 Run:
 
 ```bash
-python3 scripts/article_length_analysis.py
-```
-
-This produces:
-
-- `data/article_length_results.csv`
-- `output/article_length_comparison.png`
-
-#### Step 7: Generate SciBERT Figures
-
-Run:
-
-```bash
-python3 scripts/eda_sciBert.py
+python3 scripts/03_eda_sciBert.py
 ```
 
 This generates the following figures in the `output/` folder:
@@ -216,12 +190,26 @@ This generates the following figures in the `output/` folder:
 - `negative_pct_by_type.png`
 - `neutral_pct_by_type.png`
 
-#### Step 8: Generate VADER Figures
+#### Step 6: Run VADER Sentiment Analysis
 
 Run:
 
 ```bash
-python3 scripts/eda_vader.py
+python3 scripts/04_sentiment_vader.py
+```
+
+This produces:
+
+- `data/vader_sentiment_data.csv`
+
+
+
+#### Step 7: Generate VADER Figures
+
+Run:
+
+```bash
+python3 scripts/05_eda_vader.py
 ```
 
 This generates the following figures in the `output/` folder:
@@ -229,6 +217,19 @@ This generates the following figures in the `output/` folder:
 - `vader_sentiment_composition_stacked.png`
 - `vader_compound_by_article.png`
 - `vader_mean_compound_by_type.png`
+- 
+#### Step 8: Analyze Article Length
+
+Run:
+
+```bash
+python3 scripts/06_article_length_analysis.py
+```
+
+This produces:
+
+- `data/article_length_results.csv`
+- `output/article_length_comparison.png`
 
 #### Step 9: Review the Results
 
@@ -260,13 +261,15 @@ Run SciBERT Sentiment Analysis
         ↓
 SciBERT Results
         ↓
+Run SciBERT EDA
+        ↓
 Run VADER Sentiment Analysis
         ↓
 VADER Results
         ↓
-Analyze Article Length
+Run VADER EDA
         ↓
-Run EDA Scripts
+Analyze Article Length
         ↓
 Figures saved in output/
         ↓
