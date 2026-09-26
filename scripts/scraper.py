@@ -1,3 +1,35 @@
+"""
+Script: scraper.py
+
+Purpose:
+    Collect article text and metadata from the URLs listed in
+    data/urls.txt for the BCI sentiment analysis project.
+
+Input:
+    data/urls.txt
+
+Outputs:
+    data/articles.csv
+    data/articles/*.txt
+    scrape_errors.csv
+
+Process:
+    1. Read article URLs from data/urls.txt.
+    2. Download each webpage using requests.
+    3. Extract article text and metadata using Trafilatura.
+    4. Clean the extracted text.
+    5. Save each article as a numbered text file.
+    6. Save article metadata to articles.csv.
+    7. Record unsuccessful requests or extraction errors in
+       scrape_errors.csv.
+
+Notes:
+    The scraper waits between requests to reduce the frequency of
+    requests sent to individual websites. HTTP 202 responses are
+    retried, and other HTTP or connection errors are recorded in
+    the error log.
+"""
+
 import csv
 import os
 import re
@@ -9,9 +41,9 @@ import requests
 import trafilatura
 
 
-
 # SETTINGS
-
+# These paths and timing settings control where input and output
+# files are stored and how frequently article requests are made.
 
 URL_FILE = "data/urls.txt"
 
@@ -19,19 +51,21 @@ ARTICLE_DIR = "articles"
 OUTPUT_FILE = "articles.csv"
 ERROR_FILE = "scrape_errors.csv"
 
-# Wait between different article requests
+# Wait between different article requests.
+# This reduces the frequency of requests sent to websites.
 DELAY_SECONDS = 10
 
-# If a server returns 202, try again this many times
+# If a server returns HTTP 202, retry the request up to this
+# number of times before recording it as a failed request.
 MAX_202_RETRIES = 3
 
-# Wait between 202 retries
+# Wait between retries after receiving an HTTP 202 response.
 RETRY_DELAY_SECONDS = 10
 
 
-
 # CSV COLUMNS
-
+# These are the fields that will be stored for each successfully
+# scraped article in the metadata CSV file.
 
 CSV_FIELDS = [
     "article_id",
@@ -47,7 +81,8 @@ CSV_FIELDS = [
 
 
 # HTTP SESSION
-
+# A persistent requests session is used so that the same request
+# settings and browser-like headers are applied to each webpage.
 
 session = requests.Session()
 
@@ -62,21 +97,25 @@ session.headers.update({
 
 
 # CREATE ARTICLE DIRECTORY
-
+# Create the directory for individual article text files if it
+# does not already exist.
 
 os.makedirs(ARTICLE_DIR, exist_ok=True)
 
 
-
 # CLEAN TEXT
 
-
 def clean_text(text):
+    """
+    Clean extracted article text by replacing repeated whitespace
+    with single spaces and removing whitespace at the beginning
+    and end of the text.
+    """
 
     if not text:
         return ""
 
-    # Turn newlines, tabs, and repeated spaces into one space
+    # Replace newlines, tabs, and repeated spaces with one space.
     text = re.sub(r"\s+", " ", text)
 
     return text.strip()
@@ -84,13 +123,19 @@ def clean_text(text):
 
 # ERROR LOGGING
 
-
 def log_error(
     url,
     status_code,
     error_type,
     message
 ):
+    """
+    Record a scraping or extraction error in scrape_errors.csv.
+
+    The error log stores the time of the error, URL, website domain,
+    HTTP status code when available, error type, and a description
+    of the problem.
+    """
 
     file_exists = os.path.exists(ERROR_FILE)
 
@@ -103,6 +148,8 @@ def log_error(
 
         writer = csv.writer(f)
 
+        # Add column headers when creating the error file for the
+        # first time.
         if not file_exists:
 
             writer.writerow([
@@ -114,6 +161,7 @@ def log_error(
                 "message"
             ])
 
+        # Add information about the current error.
         writer.writerow([
             datetime.now().isoformat(timespec="seconds"),
             url,
@@ -126,8 +174,14 @@ def log_error(
 
 # GET NEXT ARTICLE ID
 
-
 def get_next_article_id():
+    """
+    Determine the next available article ID by examining the
+    existing text files in the article directory.
+
+    This allows the scraper to continue numbering articles without
+    overwriting previously collected article files.
+    """
 
     existing_files = [
         f for f in os.listdir(ARTICLE_DIR)
@@ -154,15 +208,17 @@ def get_next_article_id():
     return max(numbers) + 1
 
 
-
 # SAVE ARTICLE METADATA
-
 
 def save_metadata(
     article,
     article_id,
     filepath
 ):
+    """
+    Append metadata for a successfully scraped article to
+    articles.csv.
+    """
 
     file_exists = os.path.exists(
         OUTPUT_FILE
@@ -180,6 +236,7 @@ def save_metadata(
             fieldnames=CSV_FIELDS
         )
 
+        # Write the CSV header only when the output file is new.
         if not file_exists:
             writer.writeheader()
 
@@ -216,18 +273,22 @@ def save_metadata(
 
 # DOWNLOAD + EXTRACT ONE ARTICLE
 
-
 def scrape_article(url):
+    """
+    Download one webpage and extract its article text and metadata.
+
+    The function handles HTTP errors, connection errors, timeouts,
+    and Trafilatura extraction failures. Failed URLs are recorded
+    in scrape_errors.csv and return None.
+    """
 
     print("\n" + "=" * 70)
     print(f"URL: {url}")
 
     response = None
 
-   
     # DOWNLOAD
-   
-
+    # Request the webpage and retry temporary HTTP 202 responses.
     for attempt in range(
         1,
         MAX_202_RETRIES + 1
@@ -246,6 +307,9 @@ def scrape_article(url):
                 f"{response.status_code}"
             )
 
+            # HTTP 202 indicates that the server accepted the
+            # request but has not completed processing it. Retry
+            # before treating the request as unsuccessful.
             if response.status_code == 202:
 
                 if attempt < MAX_202_RETRIES:
@@ -281,9 +345,12 @@ def scrape_article(url):
 
                     return None
 
+            # Any status other than 200 indicates that the webpage
+            # could not be downloaded successfully.
             if response.status_code != 200:
 
-                # Special message for rate limiting
+                # HTTP 429 indicates that the server has rate-limited
+                # the scraper.
                 if response.status_code == 429:
 
                     retry_after = (
@@ -335,6 +402,8 @@ def scrape_article(url):
 
         except requests.exceptions.Timeout:
 
+            # Record requests that take longer than the 30-second
+            # timeout period.
             log_error(
                 url,
                 "",
@@ -350,6 +419,8 @@ def scrape_article(url):
 
         except requests.exceptions.ConnectionError as e:
 
+            # Record errors caused by problems connecting to the
+            # website.
             log_error(
                 url,
                 "",
@@ -365,6 +436,7 @@ def scrape_article(url):
 
         except requests.exceptions.RequestException as e:
 
+            # Record other errors raised by the requests library.
             log_error(
                 url,
                 "",
@@ -380,6 +452,8 @@ def scrape_article(url):
 
         except Exception as e:
 
+            # Record unexpected errors so that one failed article
+            # does not stop the entire scraping process.
             log_error(
                 url,
                 "",
@@ -393,6 +467,9 @@ def scrape_article(url):
 
             return None
 
+    # Extract the main article text from the downloaded webpage.
+    # Trafilatura is configured to prioritize precise article text
+    # while excluding comments and links.
     try:
 
         text = trafilatura.extract(
@@ -418,6 +495,8 @@ def scrape_article(url):
 
         return None
 
+    # If no article text was extracted, record the failure rather
+    # than saving an empty article file.
     if not text:
 
         log_error(
@@ -433,9 +512,10 @@ def scrape_article(url):
 
         return None
 
+    # Standardize whitespace in the extracted article text.
     text = clean_text(text)
 
-
+    # Extract additional metadata such as title, author, date  and description from the webpage.
     try:
 
         metadata = trafilatura.extract_metadata(
@@ -466,6 +546,7 @@ def scrape_article(url):
 
     else:
 
+        # If metadata cannot be extracted, retain the article text but leave the metadata fields blank.
         title = ""
         author = ""
         date = ""
@@ -482,6 +563,7 @@ def scrape_article(url):
         f"{len(text):,}"
     )
 
+    # Return all information needed to save the article text + metadata later in the main workflow.
     return {
         "url": url,
         "source": urlparse(url).netloc,
@@ -497,10 +579,15 @@ def scrape_article(url):
     }
 
 
+# SAVE ARTICLE
+
 def save_article(
     article,
     article_id
 ):
+    """
+    Save the extracted text for an article as a numbered text file.
+    """
 
     filename = (
         f"{article_id:03d}.txt"
@@ -521,7 +608,17 @@ def save_article(
 
     return filepath
 
+
+# MAIN SCRAPING WORKFLOW
+
 def main():
+    """
+    Run the complete article scraping workflow.
+
+    This function reads the URLs, processes each article, saves
+    successful results, records failures, and prints a summary
+    when scraping is complete.
+    """
 
     if not os.path.exists(URL_FILE):
 
@@ -532,10 +629,9 @@ def main():
 
         return
 
-
     # READ URLS
-   
-
+    # Load non empty URLs from the input file. Lines beginning with
+    # '#' are treated as comments and ignored.
     with open(
         URL_FILE,
         "r",
@@ -562,11 +658,13 @@ def main():
         f"{DELAY_SECONDS} seconds"
     )
 
+    # Determine the next available article ID so that new articles receive unique filenames.
     next_id = get_next_article_id()
 
     successful = 0
     failed = 0
 
+    # Process each URL one at a time.
     for i, url in enumerate(
         urls,
         start=1
@@ -583,6 +681,7 @@ def main():
 
             article_id = next_id
 
+            # Save the article text and metadata after a successful scrape.
             filepath = save_article(
                 article,
                 article_id
@@ -605,6 +704,7 @@ def main():
 
             failed += 1
 
+        # Wait between requests to avoid sending requests to websites too frequently and risk getting banned.
         if i < len(urls):
 
             print(
@@ -629,6 +729,8 @@ def main():
 
             print()
 
+    # Print a summary of the scraping process and the locations of
+    # the generated output files.
     print("\n" + "=" * 70)
     print("DONE")
     print("=" * 70)
@@ -661,5 +763,8 @@ def main():
         f"{os.path.abspath(ERROR_FILE)}"
     )
 
+
+# Run the main scraping workflow only when this file is executed
+# directly, rather than when it is imported by another script.
 if __name__ == "__main__":
     main()
