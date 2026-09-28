@@ -33,14 +33,13 @@ import pandas as pd
 from transformers import pipeline
 
 
-# Scientific sentiment model used for the analysis
+# Scientific sentiment model used for the analysis and setting more input/output variables.
 MODEL_NAME = "puzzz21/sci-sentiment-classify"
-
 ARTICLE_DIR = "data/articles"
 ARTICLE_OUTPUT_FILE = "data/sentiment_results.csv"
 SENTENCE_OUTPUT_FILE = "data/sentence_sentiment_results.csv"
 
-
+# Adding more text to terminal output for clarity
 print("Loading scientific sentiment model...")
 
 classifier = pipeline(
@@ -94,14 +93,14 @@ def analyze_sentence(sentence):
         max_length=512
     )[0]
 
-    # Store the model probability for each sentiment category.
+    # Store the model probability for each sentiment category
     scores = {}
 
     for item in results:
         sentiment = convert_label(item["label"])
         scores[sentiment] = item["score"]
 
-    # Assign the sentence the sentiment with the highest probability.
+    # Assign the sentence the sentiment with the highest probability/score
     best_sentiment = max(
         scores,
         key=scores.get
@@ -116,6 +115,7 @@ def analyze_sentence(sentence):
     }
 
 
+# Pulls everything together and runs analysis on articles in articles folder.
 def main():
 
     if not os.path.exists(ARTICLE_DIR):
