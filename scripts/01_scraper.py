@@ -11,7 +11,7 @@ Input:
 Outputs:
     data/articles.csv
     data/articles/*.txt
-    scrape_errors.csv
+    scrape_errors.csv (only applicable if there are errors in scraping -- will not be in the github atm)
 
 Process:
     1. Read article URLs from data/urls.txt.

@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-SENTIMENT_FILE = Path("output/vader_sentiment_data.csv")
+SENTIMENT_FILE = Path("data/vader_sentiment_data.csv")
 OUTPUT_DIR = Path("output")
 
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -146,6 +146,7 @@ for column, label in [
         alpha=0.3
     )
 
+
     plt.gca().spines["top"].set_visible(False)
     plt.gca().spines["right"].set_visible(False)
 
@@ -229,6 +230,11 @@ plt.close()
 # Plot the mean compound score for each individual article.
 plt.figure(figsize=(6, 4.2))
 
+colors = {
+    "Scientific": "#A8C7E8",
+    "News/Media": "#F2B6C6"
+}
+
 for group in article_order:
 
     subset = df[
@@ -241,10 +247,12 @@ for group in article_order:
     plt.scatter(
         x,
         y,
+        color=colors[group],
         label=group,
         s=28,
         edgecolor="black",
-        linewidth=0.5
+        linewidth=0.5,
+        alpha=0.8
     )
 
 plt.axhline(
@@ -322,7 +330,7 @@ plt.bar(
         "elinewidth": 1.2,
         "capthick": 1.2
     },
-    color=["#7FA6C9", "#D98FA3"],
+    color=["#A8C7E8", "#F2B6C6"],
     edgecolor="black",
     linewidth=0.8
 )
@@ -353,6 +361,7 @@ plt.tick_params(
 )
 
 plt.grid(
+    False,
     axis="y",
     linestyle="--",
     linewidth=0.5,

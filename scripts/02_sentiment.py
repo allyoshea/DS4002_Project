@@ -34,14 +34,17 @@ from transformers import pipeline
 
 
 # Scientific sentiment model used for the analysis and setting more input/output variables.
+#Found documentation for downloading article online 
 MODEL_NAME = "puzzz21/sci-sentiment-classify"
 ARTICLE_DIR = "data/articles"
 ARTICLE_OUTPUT_FILE = "data/sentiment_results.csv"
 SENTENCE_OUTPUT_FILE = "data/sentence_sentiment_results.csv"
 
-# Adding more text to terminal output for clarity
+#Adding more text to terminal output for clarity to see where the script and model failed 
+
 print("Loading scientific sentiment model...")
 
+#
 classifier = pipeline(
     "text-classification",
     model=MODEL_NAME,

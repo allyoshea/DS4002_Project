@@ -119,16 +119,16 @@ for column, label in sentiment_columns.items():
         * 100
     )
 
-    x = np.arange(len(article_order))
+    x = np.array([0, 0.45])
 
-    plt.figure(figsize=(5.5, 4.5))
+    plt.figure(figsize=(3.2, 2.8))
 
     plt.bar(
         x,
         summary["mean"],
         yerr=summary["std"],
         capsize=4,
-        width=0.4,
+        width=0.18,
         color=colors,
         edgecolor="black",
         linewidth=0.7,
@@ -144,8 +144,11 @@ for column, label in sentiment_columns.items():
     )
 
     plt.xlabel("Article Type")
-    plt.ylabel("Average Percentage of Sentences (%)")
-    plt.title(f"{label} Sentiment by Article Type")
+    plt.ylabel("Avg. Percentage of Sentences (%)")
+    plt.title(
+    f"{label} Sentiment by Article Type",
+    fontsize=10
+)
 
     plt.ylim(bottom=0)
 
@@ -210,86 +213,99 @@ article_order = ["Scientific", "News/Media"]
 sentiment_summary = sentiment_summary.reindex(
     article_order
 )
-
+print("\nAVERAGE SENTIMENT COMPOSITION (%)")
+print(sentiment_summary)
 positive = sentiment_summary["positive_pct"]
 negative = sentiment_summary["negative_pct"]
 neutral = sentiment_summary["neutral_pct"]
 
 
 # Create a 100% stacked bar chart showing the average sentiment
+# Create a 100% stacked bar chart showing the average sentiment
+# Create a 100% stacked bar chart showing the average sentiment
 # composition of each article type.
-plt.figure(figsize=(6, 4.2))
+plt.figure(figsize=(5, 3.5))
 
-bar_width = 0.42
+bar_width = 0.22
+x = [0, 0.45]
+
+positive_color = "#008C95"   # Teal
+negative_color = "#7B2CBF"   # Purple
+neutral_color = "#D9D9D9"    # Light gray
 
 plt.bar(
-    article_order,
+    x,
     positive,
     width=bar_width,
     label="Positive",
-    color="#7FA6C9",
+    color=positive_color,
+    alpha=0.8,
     edgecolor="black",
-    linewidth=0.8
+    linewidth=0.5
 )
 
 plt.bar(
-    article_order,
+    x,
     negative,
     width=bar_width,
     bottom=positive,
     label="Negative",
-    color="#D98FA3",
+    color=negative_color,
+    alpha=0.8,
     edgecolor="black",
-    linewidth=0.8
+    linewidth=0.5
 )
 
 plt.bar(
-    article_order,
+    x,
     neutral,
     width=bar_width,
     bottom=positive + negative,
     label="Neutral",
-    color="#C7CED8",
+    color=neutral_color,
+    alpha=0.8,
     edgecolor="black",
-    linewidth=0.8
+    linewidth=0.5
 )
 
 plt.xlabel(
     "Article Type",
-    fontsize=11
+    fontsize=10
 )
 
 plt.ylabel(
-    "Percentage of Sentences (%)",
-    fontsize=11
+    "Average Percentage of Sentences (%)",
+    fontsize=10
 )
 
 plt.title(
     "Sentiment Composition by Article Type",
-    fontsize=12,
+    fontsize=13,
+    fontweight="bold",
     pad=10
+)
+
+plt.xticks(
+    x,
+    article_order,
+    fontsize=10
+)
+
+plt.yticks(
+    fontsize=9
 )
 
 plt.ylim(0, 100)
 
-plt.tick_params(
-    axis="both",
-    labelsize=10
-)
+# Remove background gridlines.
+plt.grid(False)
 
 plt.legend(
     frameon=False,
     fontsize=9,
     loc="upper center",
-    bbox_to_anchor=(0.5, -0.12),
+    bbox_to_anchor=(0.5, -0.15),
     ncol=3
-)
-
-plt.grid(
-    axis="y",
-    linestyle="--",
-    linewidth=0.5,
-    alpha=0.3
 )
 
 plt.gca().spines["top"].set_visible(False)
@@ -304,8 +320,6 @@ plt.savefig(
 )
 
 plt.close()
-
-
 print("\nSaved plots:")
 print("articles_by_type.png")
 print("positive_pct_by_type.png")
