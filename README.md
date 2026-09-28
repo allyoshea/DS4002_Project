@@ -7,6 +7,7 @@ This repository contains the process for developing and running a sentiment anal
 ### Software and Platform
 
 - **IDE**: Visual Studio Code (VS Code)
+- **OS**: Windows 11
 - **Terminal**: VS Code Integrated Terminal or Windows PowerShell
 - **Programming Language**: Python
 - **Version Control / Repository**: GitHub
