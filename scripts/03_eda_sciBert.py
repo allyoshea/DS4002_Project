@@ -318,7 +318,31 @@ plt.savefig(
     dpi=300,
     bbox_inches="tight"
 )
+from scipy.stats import ttest_ind
 
+# Compare article-level positive sentiment between article types.
+scientific_positive = df.loc[
+    df["article_type"] == "Scientific",
+    "positive_pct"
+]
+
+news_positive = df.loc[
+    df["article_type"] == "News/Media",
+    "positive_pct"
+]
+
+t_stat, p_value = ttest_ind(
+    scientific_positive,
+    news_positive,
+    equal_var=False
+)
+
+print("\nPOSITIVE SENTIMENT T-TEST")
+print("-------------------------")
+print(f"Scientific mean: {scientific_positive.mean() * 100:.2f}%")
+print(f"News/Media mean: {news_positive.mean() * 100:.2f}%")
+print(f"t-statistic: {t_stat:.3f}")
+print(f"p-value: {p_value:.3e}")
 plt.close()
 print("\nSaved plots:")
 print("articles_by_type.png")
