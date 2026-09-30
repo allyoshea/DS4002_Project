@@ -26,13 +26,13 @@ Notes:
     The output contains the mean of each score across the sentences
     in each article.
 """
-#IMPORT REQ'D PACAKGES
+# Import required packages.
 import pandas as pd
 from pathlib import Path
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from nltk.tokenize import sent_tokenize
 
-#define input files and output location
+# Define input files and output location.
 ARTICLES_FILE = Path("data/articles.csv")
 ARTICLES_DIR = Path("data/articles")
 OUTPUT_FILE = Path("data/vader_sentiment_data.csv")
@@ -43,7 +43,7 @@ articles = pd.read_csv(ARTICLES_FILE)
 
 # Initialize the VADER sentiment analyzer.
 analyzer = SentimentIntensityAnalyzer()
-#create empty array to store the final results in 
+# Convert the article ID to an integer so it can be formatted as 001, 002, etc.
 results = []
 
 
@@ -90,7 +90,7 @@ for _, row in articles.iterrows():
     if sentences:
 
         mean_neg = sum(neg_scores) / len(sentences) # Average the sentence-level scores to obtain one set of scores  representing each article.
-        mean_neu = sum(neu_scores) / len(sentences) #SPOILER - don't use these values 
+        mean_neu = sum(neu_scores) / len(sentences) 
         mean_pos = sum(pos_scores) / len(sentences)
         mean_compound = sum(compound_scores) / len(sentences)
 
