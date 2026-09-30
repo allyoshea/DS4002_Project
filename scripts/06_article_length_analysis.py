@@ -10,7 +10,7 @@ Inputs:
     data/articles/*.txt
 
 Outputs:
-    output/article_length_results.csv
+    data/article_length_results.csv
     output/article_length_comparison.png
 
 Process:

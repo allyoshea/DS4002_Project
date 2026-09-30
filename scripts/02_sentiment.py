@@ -33,14 +33,16 @@ import pandas as pd
 from transformers import pipeline
 
 
-# Scientific sentiment model used for the analysis and setting more input/output variables.
-#Found documentation for downloading article online 
+# Scientific sentiment model used for the analysis.
+# The input and output paths define where articles are read from
+# and where the two types of sentiment results are saved.
 MODEL_NAME = "puzzz21/sci-sentiment-classify"
 ARTICLE_DIR = "data/articles"
 ARTICLE_OUTPUT_FILE = "data/sentiment_results.csv"
 SENTENCE_OUTPUT_FILE = "data/sentence_sentiment_results.csv"
 
-#Adding more text to terminal output for clarity to see where the script and model failed 
+# Load the pretrained model before analyzing the articles.
+# Loading it once here avoids reloading the model for every sentence.
 
 print("Loading scientific sentiment model...")
 
@@ -49,7 +51,7 @@ classifier = pipeline(
     "text-classification",
     model=MODEL_NAME,
     tokenizer=MODEL_NAME,
-    top_k=None
+    top_k=None # Return scores for all sentiment categories -- want to see them all
 )
 
 print("Model loaded successfully!")
@@ -57,16 +59,19 @@ print("Model loaded successfully!")
 
 def split_sentences(text):
     """Split article text into sentences and remove very short sentences."""
+    # Split text whenever punctuation is followed by whitespace.
+    # Very short sentences are excluded because they may not contain
+    # enough information for meaningful sentiment classification.
 
     sentences = re.split(
-        r'(?<=[.!?])\s+',
+        r'(?<=[.!?])\s+', # Split after sentence-ending punctuation (including lots of punctuation types)
         text
     )
 
     sentences = [
         sentence.strip()
         for sentence in sentences
-        if len(sentence.strip()) >= 20
+        if len(sentence.strip()) >= 20   # Exclude sentences shorter than 20 characters (probably not a senentece otherwise-- GOOD for consistency)
     ]
 
     return sentences
@@ -74,7 +79,8 @@ def split_sentences(text):
 
 def convert_label(label):
     """Convert the model's labels to positive, negative, or neutral."""
-
+      # The model returns abbreviated labels, so convert them to
+       # descriptive sentiment categories for the output files.
     label = label.lower()
 
     if label == "p":
@@ -90,9 +96,12 @@ def convert_label(label):
 def analyze_sentence(sentence):
     """Run the sentiment model on one sentence and return its scores."""
 
+    # Run the pretrained model on the sentence. Truncation prevents
+    # sentences longer than the model's maximum input length from
+    # causing an error
     results = classifier(
         sentence,
-        truncation=True,
+        truncation=True, # Truncate text that exceeds the model's maximum input length -- may be scientific articles
         max_length=512
     )[0]
 
@@ -118,7 +127,7 @@ def analyze_sentence(sentence):
     }
 
 
-# Pulls everything together and runs analysis on articles in articles folder.
+# Pulls everything together and runs analysis on all 60  articles in the folder.
 def main():
 
     if not os.path.exists(ARTICLE_DIR):
@@ -127,7 +136,9 @@ def main():
             f"'{ARTICLE_DIR}' folder."
         )
         return
-
+# Collect all text files from the article directory and sort them
+# so that articles are processed in numerical filename order. 
+#sorts based on number because .txt files have article_id in their names
     article_files = sorted(
         filename
         for filename in os.listdir(ARTICLE_DIR)
@@ -141,7 +152,8 @@ def main():
     print(
         f"\nFound {len(article_files)} articles."
     )
-
+    # Store article-level and sentence-level results separately
+    # because they will be saved to different CSV files.
     all_results = []
     all_sentence_results = []
 
@@ -150,6 +162,8 @@ def main():
         article_files,
         start=1
     ):
+        # Use the text filename as the article ID so that the
+        # sentence-level and article-level results remain here.
 
         article_id = filename.replace(
             ".txt",
@@ -165,6 +179,7 @@ def main():
             f"\n[{article_number}/{len(article_files)}] "
             f"Analyzing {filename}"
         )
+        #read full article text before sentence splitting 
 
         with open(
             filepath,
@@ -181,7 +196,7 @@ def main():
         )
 
         sentence_results = []
-
+         # Classify each sentence and store its sentiment scores.
         for sentence_number, sentence in enumerate(
             sentences,
             start=1
@@ -220,7 +235,8 @@ def main():
                 sentence_result
             )
 
-        # Calculate the proportion of sentences in each sentiment category.
+        # Calculate the proportion of sentences assigned to each
+        # sentiment category to create the article-level summary.
         if sentence_results:
 
             positive_count = sum(
@@ -246,7 +262,8 @@ def main():
             positive_pct = positive_count / total
             negative_pct = negative_count / total
             neutral_pct = neutral_count / total
-
+            # Store the three proportions together so the category
+            # with the largest proportion can be identified.
             overall_scores = {
                 "positive": positive_pct,
                 "negative": negative_pct,
@@ -258,6 +275,8 @@ def main():
                 key=overall_scores.get
             )
 
+       # If no sentences remain after filtering, record zero
+         # proportions and avoid assigning an overall sentiment.
         else:
             positive_pct = 0
             negative_pct = 0
@@ -287,7 +306,8 @@ def main():
             f"{overall_sentiment}"
         )
 
-    # Save the article-level sentiment summaries.
+    #  Convert the article-level results to a dataframe and save them
+    # as a CSV file for use in later analysis and visualization.
     df = pd.DataFrame(
         all_results
     )
@@ -302,7 +322,8 @@ def main():
     sentence_df = pd.DataFrame(
         all_sentence_results
     )
-
+ # Convert the sentence-level results to a dataframe and save them
+ # separately so individual sentence classifications can be examined.
     sentence_df.to_csv(
         SENTENCE_OUTPUT_FILE,
         index=False,

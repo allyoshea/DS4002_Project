@@ -6,7 +6,7 @@ Purpose:
     and generate figures comparing scientific and news/media articles.
 
 Input:
-    output/vader_sentiment_data.csv
+    data/vader_sentiment_data.csv
 
 Outputs:
     output/vader_mean_pos_distribution.png
@@ -36,10 +36,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-
+#degine input file and folder and where the generated data and figures go. 
 SENTIMENT_FILE = Path("data/vader_sentiment_data.csv")
 OUTPUT_DIR = Path("output")
-
+#make a afodler lapebeled output if it does not alr exist 
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 
@@ -51,12 +51,13 @@ df = pd.read_csv(SENTIMENT_FILE)
 df["article_type"] = df["article_id"].apply(
     lambda x: "Scientific" if x <= 30 else "News/Media"
 )
-
+#PRESERBVE category as scientific or news 
 article_order = ["Scientific", "News/Media"]
 
-
+# Print a basic overview of the dataset and the number of articles
+# in each article type.
 print("\nVADER EDA")
-print("=" * 40)
+
 
 print(f"Articles: {len(df)}")
 print(

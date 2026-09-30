@@ -43,13 +43,16 @@ SENTIMENT_FILE = Path("data/sentiment_results.csv")
 OUTPUT_DIR = Path("output")
 
 OUTPUT_DIR.mkdir(exist_ok=True)
+# The article metadata contains information about each article,
+# while the sentiment file contains the SciBERT analysis results.
+# These files are combined below using the shared article ID.
 
 
 # Load the article metadata and SciBERT sentiment results.
 articles = pd.read_csv(ARTICLES_FILE)
 sentiment = pd.read_csv(SENTIMENT_FILE)
 
-# Combine the metadata and sentiment results using the article ID.
+# Combine the metadata and sentiment results using the article ID -- so can identify which category and characteristics of each sentiment result.
 df = articles.merge(
     sentiment,
     on="article_id",
@@ -57,18 +60,17 @@ df = articles.merge(
 )
 
 # The article IDs were assigned by dataset group:
-# 001-030 are Scientific and 031-060 are News/Media.
+# 001-030 are Scientific and 031-060 are News/Media just did <30 for ease .
 df["article_type"] = df["article_id"].apply(
-    lambda x: "Scientific" if x <= 30 else "News/Media"
+    lambda x: "Scientific" if x <= 30 else "News/Media" #COUNTS FIRST 30 as scientific
 )
 
 
 print("\nDATASET OVERVIEW")
-print("----------------")
-print(f"Number of articles: {len(df)}")
+print(f"Number of articles: {len(df)}") #PRINT basic information about the dataset to help us get oriented
 
 print("\nArticles by type:")
-print(df["article_type"].value_counts())
+print(df["article_type"].value_counts()) #CHECK FOR MYSLEG make sure accurately getting 30 for both!!
 
 
 # Compare the number of articles in each group.
@@ -221,17 +223,19 @@ neutral = sentiment_summary["neutral_pct"]
 
 
 # Create a 100% stacked bar chart showing the average sentiment
-# Create a 100% stacked bar chart showing the average sentiment
-# Create a 100% stacked bar chart showing the average sentiment
+
+
 # composition of each article type.
-plt.figure(figsize=(5, 3.5))
+plt.figure(figsize=(5, 3.5)) #decrase size its taking up so much space
 
 bar_width = 0.22
-x = [0, 0.45]
+x = [0, 0.45] #makes bars closer together
 
 positive_color = "#008C95"   # Teal
 negative_color = "#7B2CBF"   # Purple
-neutral_color = "#D9D9D9"    # Light gray
+neutral_color = "#D9D9D9"    # Light gray #COLORS I THINK WILL POP
+
+#GRAPHING COMPOSITION FIGURE, have to do eeach part of the bar separetly . . .  so many
 
 plt.bar(
     x,
@@ -318,6 +322,7 @@ plt.savefig(
     dpi=300,
     bbox_inches="tight"
 )
+#PERFORM WELCH's t-test to see if there is signfiicance in the positive difference resutls
 from scipy.stats import ttest_ind
 
 # Compare article-level positive sentiment between article types.
@@ -337,8 +342,8 @@ t_stat, p_value = ttest_ind(
     equal_var=False
 )
 
+#PRINTING AT END TO SAVE EVERYTHING AND ENSURE NO ERRORS -- peace of mind knowing what was saved and printed!!
 print("\nPOSITIVE SENTIMENT T-TEST")
-print("-------------------------")
 print(f"Scientific mean: {scientific_positive.mean() * 100:.2f}%")
 print(f"News/Media mean: {news_positive.mean() * 100:.2f}%")
 print(f"t-statistic: {t_stat:.3f}")

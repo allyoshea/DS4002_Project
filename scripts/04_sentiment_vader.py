@@ -26,13 +26,13 @@ Notes:
     The output contains the mean of each score across the sentences
     in each article.
 """
-
+#IMPORT REQ'D PACAKGES
 import pandas as pd
 from pathlib import Path
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from nltk.tokenize import sent_tokenize
 
-
+#define input files and output location
 ARTICLES_FILE = Path("data/articles.csv")
 ARTICLES_DIR = Path("data/articles")
 OUTPUT_FILE = Path("data/vader_sentiment_data.csv")
@@ -43,7 +43,7 @@ articles = pd.read_csv(ARTICLES_FILE)
 
 # Initialize the VADER sentiment analyzer.
 analyzer = SentimentIntensityAnalyzer()
-
+#create empty array to store the final results in 
 results = []
 
 
@@ -52,13 +52,13 @@ for _, row in articles.iterrows():
 
     article_id = int(row["article_id"])
 
-    # Each article is stored using its three-digit article ID.
+   # Convert the article ID to an integer so it can be formatted as 001, 002, etc.
     text_file = ARTICLES_DIR / f"{article_id:03d}.txt"
-
+    # Skip articles whose text file cannot be found - was not actually scraped 
     if not text_file.exists():
         print(f"File not found: {text_file}")
         continue
-
+        #open .txt to actually read the article 
     with open(
         text_file,
         "r",
@@ -68,17 +68,18 @@ for _, row in articles.iterrows():
 
     # Split the article into sentences before calculating VADER scores.
     sentences = sent_tokenize(text)
-
+    #create lists to store the VADER scores in 
     neg_scores = []
     neu_scores = []
     pos_scores = []
     compound_scores = []
 
-    # Calculate VADER scores for each sentence.
+    # Calculate VADER scores for EVERY sentence.
     for sentence in sentences:
 
         scores = analyzer.polarity_scores(sentence)
-
+        # Store each sentiment score separately so the scores
+        # can be averaged across the article later.
         neg_scores.append(scores["neg"])
         neu_scores.append(scores["neu"])
         pos_scores.append(scores["pos"])
@@ -88,19 +89,19 @@ for _, row in articles.iterrows():
     # representing each article.
     if sentences:
 
-        mean_neg = sum(neg_scores) / len(sentences)
-        mean_neu = sum(neu_scores) / len(sentences)
+        mean_neg = sum(neg_scores) / len(sentences) # Average the sentence-level scores to obtain one set of scores  representing each article.
+        mean_neu = sum(neu_scores) / len(sentences) #SPOILER - don't use these values 
         mean_pos = sum(pos_scores) / len(sentences)
         mean_compound = sum(compound_scores) / len(sentences)
 
     else:
 
         mean_neg = 0
-        mean_neu = 0
+        mean_neu = 0 #if no senences assign a value of 0 to the psotiive./neg/netural
         mean_pos = 0
         mean_compound = 0
 
-    results.append({
+    results.append({    # Store the article ID, sentence count, and average VADER scores.
         "article_id": article_id,
         "sentences": len(sentences),
         "mean_neg": mean_neg,
@@ -124,7 +125,7 @@ vader_df.to_csv(
     index=False
 )
 
-print("\nVADER analysis complete.")
+print("\nVADER analysis complete.") #SAVE EVERYTHING!!!!
 print(f"Articles analyzed: {len(vader_df)}")
 print(f"Saved to: {OUTPUT_FILE}")
 
