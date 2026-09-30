@@ -21,6 +21,12 @@ the students.
 The dataset consists of publicly available articles and does not have private individual
 information. However, original article content remains subject to the rights and policies of the
 original publishers. 
+## License 
+The text used in this project was obtained from third party publications and remains
+subject to the original copyright and licensing terms of the publishers. We do not claim
+ownership of the original articles content. The code, metadata, and analysis are original project
+materials shared through the GitHub repository above. The scraped article text is therefore still
+subject to copyright as by original authors.
 ## Data dictionary 
 | Variable | Description | Data Type | Uncertainty |
 |---|---|---|---|
