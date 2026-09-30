@@ -47,9 +47,9 @@ import trafilatura
 
 URL_FILE = "data/urls.txt"
 
-ARTICLE_DIR = "articles"
-OUTPUT_FILE = "articles.csv"
-ERROR_FILE = "scrape_errors.csv"
+ARTICLE_DIR = "data/articles"
+OUTPUT_FILE = "data/articles.csv"
+ERROR_FILE = "data/scrape_errors.csv"
 
 # Wait between different article requests.
 # This reduces the frequency of requests sent to websites.
