@@ -68,10 +68,11 @@ print(
     f"News/Media: "
     f"{(df['article_type'] == 'News/Media').sum()}"
 )
-
+# Summarize the number of sentences per article type to compare
+# the length of the articles in each group.
 print("\nSentence counts:")
 print(
-    df.groupby("article_type")["sentences"]
+    df.groupby("article_type")["sentences"] #grouping by scientififc vs. news/media
     .describe()
     .round(2)
 )
@@ -84,10 +85,10 @@ score_columns = [
     "mean_pos",
     "mean_compound"
 ]
-
+#VADER scores across individal articles iwthine ach article type 
 summary = (
     df.groupby("article_type")[score_columns]
-    .agg(["mean", "std", "median"])
+    .agg(["mean", "std", "median"]) #CALCULATE basic meterics here
     .reindex(article_order)
 )
 
@@ -102,9 +103,9 @@ for column, label in [
     ("mean_neu", "Neutral"),
     ("mean_compound", "Compound")
 ]:
-
+#CREATE FIGURE FOR THIS
     plt.figure(figsize=(5.5, 4.2))
-
+# Create a separate set of scores for each article type.
     data = [
         df.loc[
             df["article_type"] == group,
@@ -112,7 +113,8 @@ for column, label in [
         ]
         for group in article_order
     ]
-
+    # Use boxplots to show the distribution and variation
+    # of article-level VADER scores in each group.
     plt.boxplot(
         data,
         tick_labels=article_order,
@@ -120,7 +122,7 @@ for column, label in [
     )
 
     plt.ylabel(
-        f"Mean VADER {label} Score",
+        f"Mean VADER {label} Score", #adding axes titles
         fontsize=11
     )
 
@@ -131,7 +133,7 @@ for column, label in [
 
     plt.title(
         f"Distribution of VADER {label} Scores",
-        fontsize=12,
+        fontsize=12, #adding title
         pad=10
     )
 
@@ -152,7 +154,7 @@ for column, label in [
     plt.gca().spines["right"].set_visible(False)
 
     plt.tight_layout()
-
+# Save a separate figure for each VADER score.
     plt.savefig(
         OUTPUT_DIR / f"vader_{column}_distribution.png",
         dpi=300,
@@ -166,12 +168,12 @@ for column, label in [
 plt.figure(figsize=(5.5, 4.2))
 
 for group in article_order:
-
+# Select the number of sentences for articles in the current group.
     values = df.loc[
         df["article_type"] == group,
         "sentences"
     ]
-
+    # Plot the sentence counts as a histogram
     plt.hist(
         values,
         bins=15,
@@ -230,7 +232,7 @@ plt.close()
 
 # Plot the mean compound score for each individual article.
 plt.figure(figsize=(6, 4.2))
-
+#use consistent blue and pink colors for scientifrics vs. news/media for entire results/presentation
 colors = {
     "Scientific": "#A8C7E8",
     "News/Media": "#F2B6C6"
@@ -242,7 +244,8 @@ for group in article_order:
         df["article_type"] == group
     ]
 
-    x = subset["article_id"]
+    x = subset["article_id"] # Use article ID for the x-axis and mean compound score
+    # for the y-axis.
     y = subset["mean_compound"]
 
     plt.scatter(
@@ -255,7 +258,7 @@ for group in article_order:
         linewidth=0.5,
         alpha=0.8
     )
-
+#add zero line separting positive and negative articles ("dots") can see how clsoe articles are to 0 or center
 plt.axhline(
     0,
     color="black",
@@ -278,7 +281,7 @@ plt.title(
     pad=10
 )
 
-plt.ylim(-1, 1)
+plt.ylim(-1, 1) #LIMIT BECAUSE VADER is only -1 to 1 even though all articles are  mainly like 0.15
 
 plt.tick_params(
     axis="both",
@@ -312,7 +315,7 @@ compound_summary = (
     .agg(["mean", "std", "count"])
     .reindex(article_order)
 )
-
+#calculate std. error of hte mean for each artticle
 compound_summary["sem"] = (
     compound_summary["std"]
     / compound_summary["count"] ** 0.5
@@ -321,7 +324,7 @@ compound_summary["sem"] = (
 
 plt.figure(figsize=(5.5, 4.2))
 
-plt.bar(
+plt.bar(  #PLOTTING groupded mean compound scores with std. error bars 
     article_order,
     compound_summary["mean"],
     width=0.42,
@@ -373,7 +376,7 @@ plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
 
 plt.tight_layout()
-
+#SAVE mean compoudn vader png that is comparison between all avearges
 plt.savefig(
     OUTPUT_DIR / "vader_mean_compound_by_type.png",
     dpi=300,

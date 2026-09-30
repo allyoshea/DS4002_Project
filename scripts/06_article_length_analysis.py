@@ -32,11 +32,11 @@ import re
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-
+#DEFINE location of input folder and desired output folder 
 ARTICLES_FILE = Path("data/articles.csv")
 ARTICLES_DIR = Path("data/articles")
 OUTPUT_DIR = Path("output")
-
+#create folder if doesnt exist
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 
@@ -52,19 +52,20 @@ articles["article_type"] = articles["article_id"].apply(
 
 def count_words(text):
     """Count words in an article."""
-
+#return 0 if article text is missing or is nto a string
     if not isinstance(text, str):
         return 0
-
+#use a regular expression to identify words, words cotnainign apostrophes or hypens
     words = re.findall(
         r"\b[\w'-]+\b",
         text
     )
-
+  # Return the total number of words identified in the article.
     return len(words)
 
 
-word_counts = []
+word_counts = [] # Store the word count for each article in the same order
+# as the rows in the metadata dataframe.
 
 # Read each article and calculate its word count.
 for _, row in articles.iterrows():
@@ -73,9 +74,10 @@ for _, row in articles.iterrows():
     filename = Path(
         str(row["text_file"]).replace("\\", "/")
     ).name
-
+    # Build the path to the corresponding article text file.
     text_path = ARTICLES_DIR / filename
-
+ #If the article file cannot be found, record a word count of zero
+# and continue to the next article.
     if not text_path.exists():
 
         print(
@@ -94,11 +96,12 @@ for _, row in articles.iterrows():
             encoding="utf-8"
         ) as file:
             text = file.read()
-
+#COUNT words in article and append the results
         word_counts.append(
             count_words(text)
         )
 
+    # Report files that cannot be read and assign a word count of zero.
     except Exception as error:
 
         print(
@@ -113,15 +116,15 @@ for _, row in articles.iterrows():
 articles["word_count"] = word_counts
 
 
-# Exclude articles whose text could not be read.
+# Exclude articles whose text could not be read or had 0 counts
 valid_articles = articles[
     articles["word_count"] > 0
 ].copy()
 
 
 print("\nARTICLE COUNTS")
-print("----------------")
 
+# Display the number of valid articles in each dataset group.
 print(
     valid_articles["article_type"].value_counts()
 )
@@ -142,7 +145,6 @@ summary = (
 )
 
 print("\nWORD COUNT SUMMARY")
-print("------------------")
 
 print(
     summary.round(2)
@@ -151,7 +153,7 @@ print(
 
 # Save the article-level word counts and metadata.
 results_file = (
-    OUTPUT_DIR / "article_length_results.csv"
+    OUTPUT_DIR / "article_length_results.csv" #NOW results can be used in later analysis and graph making 
 )
 
 valid_articles.to_csv(
@@ -164,7 +166,8 @@ print(
     f"{results_file}"
 )
 
-
+# Separate the word counts into the two article groups
+# for comparison in the boxplot.
 scientific = valid_articles.loc[
     valid_articles["article_type"] == "Scientific",
     "word_count"
@@ -179,15 +182,16 @@ news = valid_articles.loc[
 # Compare article lengths using a boxplot and individual article points.
 plt.figure(figsize=(8, 6))
 
+# The boxplot shows the distribution of word counts within each group.
 plt.boxplot(
     [scientific, news],
     tick_labels=["Scientific", "News/Media"]
 )
-
+# Add individual article points to show the actual variation
 plt.scatter(
     [1] * len(scientific),
     scientific,
-    alpha=0.6
+    alpha=0.6 #keep in mine word cound
 )
 
 plt.scatter(
@@ -208,7 +212,7 @@ plt.tight_layout()
 figure_file = (
     OUTPUT_DIR / "article_length_comparison.png"
 )
-
+#Save figure
 plt.savefig(
     figure_file,
     dpi=300,
