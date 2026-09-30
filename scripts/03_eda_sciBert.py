@@ -10,13 +10,28 @@ Inputs:
     data/sentiment_results.csv
 
 Outputs:
+Outputs:
     output/articles_by_type.png
+        Number of scientific and news/media articles.
+
     output/positive_pct_by_type.png
+        Mean percentage of positive sentences by article type.
+
     output/negative_pct_by_type.png
+        Mean percentage of negative sentences by article type.
+
     output/neutral_pct_by_type.png
+        Mean percentage of neutral sentences by article type.
+
     output/sentence_count_by_type.png
+        Distribution of sentence counts by article type.
+
     output/sentiment_composition_stacked.png
+        Average positive, negative, and neutral sentiment composition
+        by article type.
+
     output/sentiment_eda_data.csv
+        Combined article metadata and SciBERT sentiment results.
 
 Process:
     1. Load the article metadata and SciBERT sentiment results.
@@ -52,7 +67,8 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 articles = pd.read_csv(ARTICLES_FILE)
 sentiment = pd.read_csv(SENTIMENT_FILE)
 
-# Combine the metadata and sentiment results using the article ID -- so can identify which category and characteristics of each sentiment result.
+# # Combine article metadata with sentiment results using article_id
+# so each sentiment result can be associated with its article type.
 df = articles.merge(
     sentiment,
     on="article_id",
@@ -70,7 +86,7 @@ print("\nDATASET OVERVIEW")
 print(f"Number of articles: {len(df)}") #PRINT basic information about the dataset to help us get oriented
 
 print("\nArticles by type:")
-print(df["article_type"].value_counts()) #CHECK FOR MYSLEG make sure accurately getting 30 for both!!
+print(df["article_type"].value_counts()) # Verify that the articles are correctly divided between the two groups.
 
 
 # Compare the number of articles in each group.
@@ -233,9 +249,9 @@ x = [0, 0.45] #makes bars closer together
 
 positive_color = "#008C95"   # Teal
 negative_color = "#7B2CBF"   # Purple
-neutral_color = "#D9D9D9"    # Light gray #COLORS I THINK WILL POP
+neutral_color = "#D9D9D9"    # Light gray ## Colors used to distinguish sentiment categories.
 
-#GRAPHING COMPOSITION FIGURE, have to do eeach part of the bar separetly . . .  so many
+# Build the stacked bar one sentiment category at a time.
 
 plt.bar(
     x,
@@ -322,7 +338,8 @@ plt.savefig(
     dpi=300,
     bbox_inches="tight"
 )
-#PERFORM WELCH's t-test to see if there is signfiicance in the positive difference resutls
+#Perform Welch's independent two-sample t-test to determine
+# whether positive sentiment differs significantly between article types.
 from scipy.stats import ttest_ind
 
 # Compare article-level positive sentiment between article types.
@@ -342,7 +359,7 @@ t_stat, p_value = ttest_ind(
     equal_var=False
 )
 
-#PRINTING AT END TO SAVE EVERYTHING AND ENSURE NO ERRORS -- peace of mind knowing what was saved and printed!!
+# Print the statistical results and confirm that output files were saved.
 print("\nPOSITIVE SENTIMENT T-TEST")
 print(f"Scientific mean: {scientific_positive.mean() * 100:.2f}%")
 print(f"News/Media mean: {news_positive.mean() * 100:.2f}%")
