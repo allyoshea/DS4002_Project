@@ -10,7 +10,7 @@ Inputs:
     data/articles/*.txt
 
 Outputs:
-    output/vader_sentiment_data.csv
+    data/vader_sentiment_data.csv
 
 Process:
     1. Load the article metadata.
@@ -35,7 +35,7 @@ from nltk.tokenize import sent_tokenize
 
 ARTICLES_FILE = Path("data/articles.csv")
 ARTICLES_DIR = Path("data/articles")
-OUTPUT_FILE = Path("output/vader_sentiment_data.csv")
+OUTPUT_FILE = Path("data/vader_sentiment_data.csv")
 
 
 # Load the article metadata to determine which articles to analyze.
