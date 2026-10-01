@@ -9,7 +9,7 @@ Inputs:
     data/articles.csv
     data/sentiment_results.csv
 
-Outputs:
+
 Outputs:
     output/articles_by_type.png
         Number of scientific and news/media articles.
