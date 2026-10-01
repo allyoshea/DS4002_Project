@@ -32,11 +32,13 @@ import re
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-#DEFINE location of input folder and desired output folder 
+# Define the locations of the article metadata, article text files,
+# and output directory used by this analysis.
 ARTICLES_FILE = Path("data/articles.csv")
 ARTICLES_DIR = Path("data/articles")
 OUTPUT_DIR = Path("output")
-#create folder if doesnt exist
+# Create the output directory if it does not already exist so that
+# the results and figure can be saved successfully.
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 
@@ -52,10 +54,11 @@ articles["article_type"] = articles["article_id"].apply(
 
 def count_words(text):
     """Count words in an article."""
-#return 0 if article text is missing or is nto a string
+# Return zero when the article text is missing or is not stored as a string.
     if not isinstance(text, str):
         return 0
-#use a regular expression to identify words, words cotnainign apostrophes or hypens
+  # Use a regular expression to identify individual words.
+    # The pattern allows words containing apostrophes or hyphens.
     words = re.findall(
         r"\b[\w'-]+\b",
         text
@@ -64,17 +67,18 @@ def count_words(text):
     return len(words)
 
 
-word_counts = [] # Store the word count for each article in the same order
-# as the rows in the metadata dataframe.
+word_counts = [] # Store the calculated word count for each article so it can later
+# be added back to the corresponding metadata row.
 
-# Read each article and calculate its word count.
+# Loop through every article in the metadata and calculate its word count.
 for _, row in articles.iterrows():
 
     # Extract the filename from the path stored in the metadata CSV.
     filename = Path(
         str(row["text_file"]).replace("\\", "/")
     ).name
-    # Build the path to the corresponding article text file.
+    # Combine the article directory with the filename to locate the
+# corresponding text file.
     text_path = ARTICLES_DIR / filename
  #If the article file cannot be found, record a word count of zero
 # and continue to the next article.
@@ -87,7 +91,8 @@ for _, row in articles.iterrows():
 
         word_counts.append(0)
         continue
-
+# Attempt to open and read the article text using UTF-8 encoding.
+# The try/except prevents one unreadable file from stopping the analysis.
     try:
 
         with open(
@@ -101,7 +106,8 @@ for _, row in articles.iterrows():
             count_words(text)
         )
 
-    # Report files that cannot be read and assign a word count of zero.
+    # Report files that cannot be read and assign a zero word count
+# so the remaining articles can still be processed.
     except Exception as error:
 
         print(
@@ -116,7 +122,8 @@ for _, row in articles.iterrows():
 articles["word_count"] = word_counts
 
 
-# Exclude articles whose text could not be read or had 0 counts
+# Remove articles with a word count of zero because these articles
+# could not be successfully analyzed for length.
 valid_articles = articles[
     articles["word_count"] > 0
 ].copy()
@@ -130,7 +137,9 @@ print(
 )
 
 
-# Calculate word count summary statistics for each article type.
+# Calculate descriptive statistics for article length within each group.
+# These statistics allow the typical article length and variation in
+# length to be compared between Scientific and News/Media articles.
 summary = (
     valid_articles
     .groupby("article_type")["word_count"]
@@ -179,21 +188,27 @@ news = valid_articles.loc[
 ]
 
 
-# Compare article lengths using a boxplot and individual article points.
+# Create a figure comparing the distribution of article word counts
+# between the two article types.
 plt.figure(figsize=(8, 6))
 
-# The boxplot shows the distribution of word counts within each group.
+# Separate the word counts into Scientific and News/Media groups
+# so their distributions can be plotted side by side.
+## Overlay individual article points to show the actual word count
+# of each article rather than only the summary distribution.
 plt.boxplot(
     [scientific, news],
     tick_labels=["Scientific", "News/Media"]
 )
-# Add individual article points to show the actual variation
+# Plot each Scientific article as an individual point at the
+# Scientific category on the x-axis.
 plt.scatter(
     [1] * len(scientific),
     scientific,
     alpha=0.6 #keep in mine word cound
 )
-
+# Plot each Scientific article as an individual point at the
+# Scientific category on the x-axis.
 plt.scatter(
     [2] * len(news),
     news,
@@ -212,7 +227,7 @@ plt.tight_layout()
 figure_file = (
     OUTPUT_DIR / "article_length_comparison.png"
 )
-#Save figure
+# Save the completed article-length comparison as a high-resolution PNG.
 plt.savefig(
     figure_file,
     dpi=300,
