@@ -56,7 +56,8 @@ import numpy as np
 ARTICLES_FILE = Path("data/articles.csv")
 SENTIMENT_FILE = Path("data/sentiment_results.csv")
 OUTPUT_DIR = Path("output")
-
+# Define the locations of the input datasets and the output folder.
+# Keeping file paths in one place makes the script easier to modify.
 OUTPUT_DIR.mkdir(exist_ok=True)
 # The article metadata contains information about each article,
 # while the sentiment file contains the SciBERT analysis results.
@@ -64,8 +65,9 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 # Load the article metadata and SciBERT sentiment results.
-articles = pd.read_csv(ARTICLES_FILE)
-sentiment = pd.read_csv(SENTIMENT_FILE)
+
+articles = pd.read_csv(ARTICLES_FILE) # Read the article metadata into a pandas DataFrame.
+sentiment = pd.read_csv(SENTIMENT_FILE) # Read the SciBERT sentiment results into a separate DataFrame.
 
 # # Combine article metadata with sentiment results using article_id
 # so each sentiment result can be associated with its article type.
@@ -74,16 +76,16 @@ df = articles.merge(
     on="article_id",
     how="inner"
 )
-
-# The article IDs were assigned by dataset group:
-# 001-030 are Scientific and 031-060 are News/Media just did <30 for ease .
+# Article IDs 001-030 correspond to Scientific articles, while
+# 031-060 correspond to News/Media articles.
 df["article_type"] = df["article_id"].apply(
     lambda x: "Scientific" if x <= 30 else "News/Media" #COUNTS FIRST 30 as scientific
 )
 
-
+# Print basic information about the combined dataset to verify that the merge
+# produced the expected number of articles.
 print("\nDATASET OVERVIEW")
-print(f"Number of articles: {len(df)}") #PRINT basic information about the dataset to help us get oriented
+print(f"Number of articles: {len(df)}") #ensures all 60 articles are accounted for
 
 print("\nArticles by type:")
 print(df["article_type"].value_counts()) # Verify that the articles are correctly divided between the two groups.
@@ -140,7 +142,8 @@ for column, label in sentiment_columns.items():
     x = np.array([0, 0.45])
 
     plt.figure(figsize=(3.2, 2.8))
-
+# Error bars represent the standard deviation across articles within each
+# article type.
     plt.bar(
         x,
         summary["mean"],
@@ -338,8 +341,10 @@ plt.savefig(
     dpi=300,
     bbox_inches="tight"
 )
-#Perform Welch's independent two-sample t-test to determine
-# whether positive sentiment differs significantly between article types.
+
+# Use Welch's independent two-sample t-test to compare article-level
+# positive sentiment between Scientific and News/Media articles.
+# Welch's test does not assume equal variance between the two groups.
 from scipy.stats import ttest_ind
 
 # Compare article-level positive sentiment between article types.
@@ -358,6 +363,7 @@ t_stat, p_value = ttest_ind(
     news_positive,
     equal_var=False
 )
+
 
 # Print the statistical results and confirm that output files were saved.
 print("\nPOSITIVE SENTIMENT T-TEST")
