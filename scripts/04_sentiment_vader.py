@@ -33,9 +33,10 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from nltk.tokenize import sent_tokenize
 
 # Define input files and output location.
-ARTICLES_FILE = Path("data/articles.csv")
-ARTICLES_DIR = Path("data/articles")
-OUTPUT_FILE = Path("data/vader_sentiment_data.csv")
+
+ARTICLES_FILE = Path("data/articles.csv") # Define the location of the article metadata file.
+ARTICLES_DIR = Path("data/articles") # Define the directory containing the individual article text files.
+OUTPUT_FILE = Path("data/vader_sentiment_data.csv") # Define where the final VADER results will be saved.
 
 
 # Load the article metadata to determine which articles to analyze.
@@ -68,7 +69,7 @@ for _, row in articles.iterrows():
 
     # Split the article into sentences before calculating VADER scores.
     sentences = sent_tokenize(text)
-    #create lists to store the VADER scores in 
+    #create empty lists to store the positive, negative, and neutral VADER scores in 
     neg_scores = []
     neu_scores = []
     pos_scores = []
@@ -113,7 +114,7 @@ for _, row in articles.iterrows():
 
 # Convert the results into a dataframe.
 vader_df = pd.DataFrame(results)
-
+#print out if there is an error so can understand need to rerun. 
 if vader_df.empty:
     print("ERROR: No articles were analyzed.")
     raise SystemExit(1)
@@ -124,8 +125,8 @@ vader_df.to_csv(
     OUTPUT_FILE,
     index=False
 )
-
-print("\nVADER analysis complete.") #SAVE EVERYTHING!!!!
+#print out final statements so can see analysis completed successfully. 
+print("\nVADER analysis complete.")
 print(f"Articles analyzed: {len(vader_df)}")
 print(f"Saved to: {OUTPUT_FILE}")
 
