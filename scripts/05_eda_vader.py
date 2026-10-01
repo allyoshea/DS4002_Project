@@ -58,7 +58,8 @@ article_order = ["Scientific", "News/Media"]
 # in each article type.
 print("\nVADER EDA")
 
-
+# Print the number of articles in the complete dataset and in each
+# article type to verify that the articles were classified correctly.
 print(f"Articles: {len(df)}")
 print(
     f"Scientific: "
@@ -68,8 +69,8 @@ print(
     f"News/Media: "
     f"{(df['article_type'] == 'News/Media').sum()}"
 )
-# Summarize the number of sentences per article type to compare
-# the length of the articles in each group.
+# Calculate descriptive statistics for the number of sentences per article.
+# This provides an initial comparison of article length between the groups.
 print("\nSentence counts:")
 print(
     df.groupby("article_type")["sentences"] #grouping by scientififc vs. news/media
@@ -78,14 +79,16 @@ print(
 )
 
 
-# Calculate summary statistics for the VADER scores by article type.
+# Identify the VADER scores that will be included in the summary analysis.
+# These include the negative, neutral, positive, and compound scores.
 score_columns = [
     "mean_neg",
     "mean_neu",
     "mean_pos",
     "mean_compound"
 ]
-#VADER scores across individal articles iwthine ach article type 
+# Calculate the mean, standard deviation, and median of each VADER score
+# separately for Scientific and News/Media articles.
 summary = (
     df.groupby("article_type")[score_columns]
     .agg(["mean", "std", "median"]) #CALCULATE basic meterics here
@@ -96,16 +99,20 @@ print("\nVADER score summary:")
 print(summary.round(3))
 
 
-# Compare the distribution of each VADER score between article types.
+# Create a separate boxplot for each VADER sentiment measure.
+# Boxplots allow the distributions of scores to be compared between
+# Scientific and News/Media articles.
 for column, label in [
     ("mean_pos", "Positive"),
     ("mean_neg", "Negative"),
     ("mean_neu", "Neutral"),
     ("mean_compound", "Compound")
 ]:
-#CREATE FIGURE FOR THIS
+# Select the VADER score being analyzed and assign a readable label
+# for the corresponding figure.
     plt.figure(figsize=(5.5, 4.2))
-# Create a separate set of scores for each article type.
+# Extract the article-level scores for each article type.
+# The data are kept separate so the two distributions can be compared.
     data = [
         df.loc[
             df["article_type"] == group,
@@ -113,13 +120,15 @@ for column, label in [
         ]
         for group in article_order
     ]
-    # Use boxplots to show the distribution and variation
-    # of article-level VADER scores in each group.
+# Use boxplots to display the median, spread, and potential outliers
+# of the VADER scores for each article type.
     plt.boxplot(
         data,
         tick_labels=article_order,
         widths=0.45
     )
+    # Add descriptive axis labels and a title identifying the VADER score
+# shown in the current figure.
 
     plt.ylabel(
         f"Mean VADER {label} Score", #adding axes titles
@@ -145,7 +154,7 @@ for column, label in [
     plt.grid(
         axis="y",
         linestyle="--",
-        linewidth=0.5,
+        linewidth=0.5,  # Add horizontal reference lines to make differences in score values easier to visually compare.                                                     
         alpha=0.3
     )
 
@@ -164,16 +173,17 @@ for column, label in [
     plt.close()
 
 
-# Compare the distribution of article lengths between the two groups.
+# Plot the sentence-count distribution for each article type on the
+# same histogram so the two groups can be visually compared.
 plt.figure(figsize=(5.5, 4.2))
 
 for group in article_order:
-# Select the number of sentences for articles in the current group.
+# Select the sentence counts for the current article type.
     values = df.loc[
         df["article_type"] == group,
         "sentences"
     ]
-    # Plot the sentence counts as a histogram
+   # Plot the distribution of sentence counts for the current article group.
     plt.hist(
         values,
         bins=15,
@@ -184,7 +194,7 @@ for group in article_order:
     )
 
 plt.xlabel(
-    "Number of Sentences",
+    "Number of Sentences",    
     fontsize=11
 )
 
@@ -220,7 +230,7 @@ plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
 
 plt.tight_layout()
-
+# Save the article length comparison as a high-resolution figure.
 plt.savefig(
     OUTPUT_DIR / "vader_article_length_distribution.png",
     dpi=300,
@@ -230,20 +240,25 @@ plt.savefig(
 plt.close()
 
 
-# Plot the mean compound score for each individual article.
+# Plot the mean compound sentiment score for every individual article.
+# This allows variation between individual articles to be examined
+# rather than only comparing group averages.
 plt.figure(figsize=(6, 4.2))
-#use consistent blue and pink colors for scientifrics vs. news/media for entire results/presentation
+# Use consistent colors for Scientific and News/Media articles
+# across the figures in all of this analysis for visual clarity. 
 colors = {
     "Scientific": "#A8C7E8",
     "News/Media": "#F2B6C6"
 }
-
+# Plot each article type separately so the groups can be distinguished
+# visually in the scatterplot.
 for group in article_order:
 
     subset = df[
         df["article_type"] == group
     ]
-
+# Use article ID to identify each article on the x-axis and its
+# mean compound score as the y-axis measurement.
     x = subset["article_id"] # Use article ID for the x-axis and mean compound score
     # for the y-axis.
     y = subset["mean_compound"]
