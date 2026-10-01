@@ -36,10 +36,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-#degine input file and folder and where the generated data and figures go. 
+#design input file and folder and where the generated data and figures go. 
 SENTIMENT_FILE = Path("data/vader_sentiment_data.csv")
 OUTPUT_DIR = Path("output")
-#make a afodler lapebeled output if it does not alr exist 
+#make a folder labeled output if it does not alrready exist 
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 
@@ -51,7 +51,7 @@ df = pd.read_csv(SENTIMENT_FILE)
 df["article_type"] = df["article_id"].apply(
     lambda x: "Scientific" if x <= 30 else "News/Media"
 )
-#PRESERBVE category as scientific or news 
+# Assign category as scientific or news 
 article_order = ["Scientific", "News/Media"]
 
 # Print a basic overview of the dataset and the number of articles
@@ -262,7 +262,8 @@ for group in article_order:
     x = subset["article_id"] # Use article ID for the x-axis and mean compound score
     # for the y-axis.
     y = subset["mean_compound"]
-
+# Plot each article as an individual point.
+# The color indicates whether the article is Scientific or News/Media.
     plt.scatter(
         x,
         y,
@@ -273,7 +274,8 @@ for group in article_order:
         linewidth=0.5,
         alpha=0.8
     )
-#add zero line separting positive and negative articles ("dots") can see how clsoe articles are to 0 or center
+# Add a horizontal line at zero to distinguish positive and negative
+# compound sentiment scores.
 plt.axhline(
     0,
     color="black",
@@ -296,7 +298,8 @@ plt.title(
     pad=10
 )
 
-plt.ylim(-1, 1) #LIMIT BECAUSE VADER is only -1 to 1 even though all articles are  mainly like 0.15
+plt.ylim(-1, 1) # VADER compound scores range from -1 to 1.
+# Keeping the full range makes the direction and scale of the scores clear.
 
 plt.tick_params(
     axis="both",
@@ -324,22 +327,26 @@ plt.savefig(
 plt.close()
 
 
-# Calculate the mean compound score and standard error for each group.
+# Calculate the mean, standard deviation, and number of articles in each
+# group to summarize the article-level compound scores.
 compound_summary = (
     df.groupby("article_type")["mean_compound"]
     .agg(["mean", "std", "count"])
     .reindex(article_order)
 )
-#calculate std. error of hte mean for each artticle
+# Calculate the standard error of the mean (SEM) for each article type.
+# SEM estimates the uncertainty around the group mean.
 compound_summary["sem"] = (
     compound_summary["std"]
     / compound_summary["count"] ** 0.5
 )
 
-
+# Create a bar chart comparing the average compound sentiment
+# between Scientific and News/Media articles.
 plt.figure(figsize=(5.5, 4.2))
 
-plt.bar(  #PLOTTING groupded mean compound scores with std. error bars 
+plt.bar( # Plot the mean compound sentiment score for each article type,
+# with error bars representing the standard error of the mean.
     article_order,
     compound_summary["mean"],
     width=0.42,
@@ -391,7 +398,7 @@ plt.gca().spines["top"].set_visible(False)
 plt.gca().spines["right"].set_visible(False)
 
 plt.tight_layout()
-#SAVE mean compoudn vader png that is comparison between all avearges
+# Save the final comparison of mean compound scores as a high-resolution PNG.
 plt.savefig(
     OUTPUT_DIR / "vader_mean_compound_by_type.png",
     dpi=300,
