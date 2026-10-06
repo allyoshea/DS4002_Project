@@ -15,17 +15,15 @@ This repository contains the process for developing and running a sentiment anal
 #### Add-On Packages and Libraries
 
 The project uses the following Python packages:
-
-- pandas
-- requests
-- trafilatura
-- torch
-- transformers
-- nltk
-- vaderSentiment
-- scikit-learn
-- matplotlib
-
+- pandas 2.2.2
+- requests 2.32.2
+- nltk 3.8.1
+- scikit-learn 1.4.2
+- matplotlib 3.8.4
+- vaderSentiment 3.3.2
+- trafilatura 2.2.0
+- torch 2.14.0
+- transformers 5.17.0
 See `requirements.txt` for the complete list of required packages.
 
 ### Map of the Documentation
