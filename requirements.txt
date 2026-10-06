@@ -1,8 +1,8 @@
-pandas
-torch
-requests
-transformers
-trafilatura
-vaderSentiment
-nltk
-matplotlib
+pandas 2.2.2
+requests 2.32.2
+nltk 3.8.1
+scikit-learn 1.4.2
+matplotlib 3.8.4
+vaderSentiment 3.3.2
+trafilatura 2.2.0
+torch 2.14.0
